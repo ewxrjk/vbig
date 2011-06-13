@@ -1,0 +1,18 @@
+vbig
+====
+
+vbig creates or verifies a file full of psuedo-random data.
+
+Installation
+============
+
+  ./configure
+  make
+  sudo make install
+
+If building from git, do './autogen.sh' first.
+
+Author
+======
+
+Richard Kettlewell <rjk@greenend.org.uk>

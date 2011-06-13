@@ -1,0 +1,39 @@
+.TH vbig 1
+.SH NAME
+vbig \- create or verify a large but pseudo-random file
+.SH SYNOPSIS
+\fBvbig \fR[\fB--seed \fRSEED\fR] \fB--create\fR|\fB--verify \fIPATH SIZE
+.br
+\fBvbig --help
+.br
+\fBvbig --version
+.SH DESCRIPTION
+\fBvbig\fR either creates a file of specified size full of predictable
+psuedo-random data, or verifies that it has the expected contents.
+The intended use is to test whether storage media really do what they
+say on the tin.
+.PP
+\fISIZE\fR may end with \fBK\fR, \fBM\fR or \fBG\fR to select (binary)
+kilobytes, megabytes or gigabytes.
+.SH OPTIONS
+.TP
+.B --seed
+Specifies the random seed to use.
+Optional.
+.TP
+.B --create
+Selects create mode.
+\fIPATH\fR will be filled with \fISIZE\fR psuedo-random bytes.
+.TP
+.B --verify
+Selects verify mode.
+Checks that \fIPATH\fR has exactly the contents that would be produced
+by the equivalent \fB--create\fR call.
+.TP
+.B --help
+Displays a usage message.
+.TP
+.B --version
+Displays the version strings.
+.SH AUTHOR
+Richard Kettlewell <rjk@greenend.org.uk>
