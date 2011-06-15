@@ -31,12 +31,12 @@ static void help(void) {
          "  vbig [--seed SEED] --verify|--create PATH SIZE\n"
          "\n"
          "Options:\n"
-         "  --seed         Specify random seed\n"
-         "  --verify       Verify that PATH contains the expected contents\n"
-         "  --create       Create PATH with psuedo-random contents\n"
-         "  --flush        Flush cache\n"
-         "  --help         Display usage message\n"
-         "  --version      Display version string\n");
+         "  --seed, -s     Specify random seed\n"
+         "  --verify, -v   Verify that PATH contains the expected contents\n"
+         "  --create, -c   Create PATH with psuedo-random contents\n"
+         "  --flush, -f    Flush cache\n"
+         "  --help, -h     Display usage message\n"
+         "  --version, -V  Display version string\n");
 }
 
 // Possible modes of operation
