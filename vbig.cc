@@ -129,9 +129,9 @@ int main(int argc, char **argv) {
   if(mode == VERIFY && flush)
     flushCache(fp);
   char generated[4096], input[4096];
-  size_t remain = size;
+  long long remain = size;
   while(remain > 0) {
-    size_t bytesGenerated = (remain > sizeof generated
+    size_t bytesGenerated = (remain > (ssize_t)sizeof generated
                              ? sizeof generated
                              : remain);
     rng.stream(generated, bytesGenerated);
