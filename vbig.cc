@@ -9,9 +9,6 @@
 #include <fcntl.h>
 #include "Arcfour.h"
 
-// Path to magic file to drop filesystem caches
-static const char dropCaches[] = "/proc/sys/vm/drop_caches";
-
 // Command line options
 const struct option opts[] = {
   { "seed", required_argument, 0, 's' },
@@ -65,12 +62,27 @@ static void flushCache(FILE *fp) {
   // synced.
   if(fsync(fileno(fp)) < 0)
     fatal(errno, "fsync");
+#if defined DROP_CACHE_FILE
   int fd;
-  if((fd = open(dropCaches, O_WRONLY, 0)) < 0)
-    fatal(errno, "%s", dropCaches);
+  if((fd = open(DROP_CACHE_FILE, O_WRONLY, 0)) < 0)
+    fatal(errno, "%s", DROP_CACHE_FILE);
   if(write(fd, "3\n", 2) < 0)
-    fatal(errno, "%s", dropCaches);
+    fatal(errno, "%s", DROP_CACHE_FILE);
   close(fd);
+#elif defined PURGE_COMMAND
+  int rc;
+  if((rc = system(PURGE_COMMAND)) < 0)
+    fatal(errno, "executing %s", PURGE_COMMAND);
+  else if(rc) {
+    if(WIFSIGNALED(rc)) {
+      fprintf(stderr, "%s%s\n", 
+	      strsignal(WTERMSIG(rc)),
+	      WCOREDUMP(rc) ? " (core dumped)" : "");
+      exit(WTERMSIG(rc) + 128);
+    } else
+      exit(WEXITSTATUS(rc));
+  }
+#endif
 }
 
 int main(int argc, char **argv) {
