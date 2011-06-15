@@ -29,7 +29,6 @@
 
 #define ARCFOUR_SBOX_SIZE 256
 
-/** @brief Context structture for Arcfour stream cipher */
 class Arcfour {
   char sbox[ARCFOUR_SBOX_SIZE];
   uint8_t idx_i, idx_j;

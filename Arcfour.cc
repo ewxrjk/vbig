@@ -21,15 +21,6 @@
 #include <config.h>
 #include "Arcfour.h"
 
-/** @brief Encrypt using Arcfour stream cipher
- * @param context Context structure
- * @param inbuf Input buffer
- * @param outbuf Output buffer
- * @param length Number of bytes in @p inbuf
- *
- * Copies from @p inbuf to @p outbuf, encrypting (or decrypting) using
- * the stream controlled by @p context.
- */
 void Arcfour::stream(char *outbuf, size_t length) {
   uint8_t i = idx_i;
   uint8_t j = idx_j;

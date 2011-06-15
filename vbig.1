@@ -1,3 +1,20 @@
+\"
+\" This file is part of vbig.
+\" Copyright (C) 2011 Richard Kettlewell
+\"
+\" This program is free software: you can redistribute it and/or modify
+\" it under the terms of the GNU General Public License as published by
+\" the Free Software Foundation, either version 3 of the License, or
+\" (at your option) any later version.
+\"
+\" This program is distributed in the hope that it will be useful,
+\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+\" GNU General Public License for more details.
+\"
+\" You should have received a copy of the GNU General Public License
+\" along with this program.  If not, see <http://www.gnu.org/licenses/>.
+\"
 .TH vbig 1
 .SH NAME
 vbig \- create or verify a large but pseudo-random file
@@ -17,23 +34,27 @@ say on the tin.
 kilobytes, megabytes or gigabytes.
 .SH OPTIONS
 .TP
-.B --seed
+.B --seed\fR, \fB-s \fISEED
 Specifies the random seed to use.
 Optional.
 .TP
-.B --create
+.B --create\fR, \fB-c
 Selects create mode.
 \fIPATH\fR will be filled with \fISIZE\fR psuedo-random bytes.
 .TP
-.B --verify
+.B --verify\fR, \fB-v
 Selects verify mode.
 Checks that \fIPATH\fR has exactly the contents that would be produced
 by the equivalent \fB--create\fR call.
 .TP
-.B --help
+.B --flush\fR, \fB-f
+Flush cached data after creating the file or before verifying it.
+On some platforms, only root can use this option.
+.TP
+.B --help\fR, \fB-h
 Displays a usage message.
 .TP
-.B --version
+.B --version\fR, \fB-h
 Displays the version strings.
 .SH AUTHOR
 Richard Kettlewell <rjk@greenend.org.uk>
