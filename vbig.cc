@@ -119,23 +119,25 @@ int main(int argc, char **argv) {
       fatal(0, "unknown option");
     }
   }
+  argc -= optind;
+  argv += optind;
   if(mode == NONE) {
     fatal(0, "must specify one of --verify or --create");
     exit(1);
   }
-  if(optind + 2 != argc) {
+  if(argc != 2) {
     fatal(0, "must specify a path and size");
     exit(1);
   }
-  const char *path = argv[optind];
+  const char *path = argv[0];
   errno = 0;
   char *end;
-  long long size = strtoll(argv[optind + 1], &end, 10);
+  long long size = strtoll(argv[1], &end, 10);
   if(errno) {
     fatal(errno, "invalid size");
     exit(1);
   }
-  if(end == argv[optind + 1]) {
+  if(end == argv[1]) {
     fatal(0, "invalid size");
     exit(1);
   }
