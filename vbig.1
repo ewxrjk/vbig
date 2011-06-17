@@ -19,7 +19,7 @@
 .SH NAME
 vbig \- create or verify a large but pseudo-random file
 .SH SYNOPSIS
-\fBvbig \fR[\fB--seed \fRSEED\fR] \fB--create\fR|\fB--verify \fIPATH SIZE
+\fBvbig \fR[\fB--seed \fRSEED\fR] \fB--create\fR|\fB--verify \fIPATH \fR[\fISIZE\fR]
 .br
 \fBvbig --help
 .br
@@ -32,6 +32,8 @@ say on the tin.
 .PP
 \fISIZE\fR may end with \fBK\fR, \fBM\fR or \fBG\fR to select (binary)
 kilobytes, megabytes or gigabytes.
+The size is mandatory when creating a file but optional when verifying
+it.
 .SH OPTIONS
 .TP
 .B --seed\fR, \fB-s \fISEED

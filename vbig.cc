@@ -24,6 +24,7 @@
 #include <getopt.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <sys/stat.h>
 #include "Arcfour.h"
 
 // Command line options
@@ -42,7 +43,7 @@ static void help(void) {
   printf("vbig - create or verify a large but pseudo-random file\n"
          "\n"
          "Usage:\n"
-         "  vbig [--seed SEED] --verify|--create PATH SIZE\n"
+         "  vbig [--seed SEED] --verify|--create PATH [SIZE]\n"
          "\n"
          "Options:\n"
          "  --seed, -s     Specify random seed\n"
@@ -123,24 +124,34 @@ int main(int argc, char **argv) {
   argv += optind;
   if(mode == NONE)
     fatal(0, "must specify one of --verify or --create");
-  if(argc != 2)
-    fatal(0, "must specify a path and size");
+  if(argc > 2)
+    fatal(0, "excess arguments");
+  if(argc < (mode == VERIFY ? 1 : 2))
+    fatal(0, "insufficient arguments");
   const char *path = argv[0];
-  errno = 0;
-  char *end;
-  long long size = strtoll(argv[1], &end, 10);
-  if(errno)
-    fatal(errno, "invalid size");
-  if(end == argv[1])
-    fatal(0, "invalid size");
-  if(!strcmp(end, "K"))
-    size *= 1024;
-  else if(!strcmp(end, "M"))
-    size *= 1024 * 1024;
-  else if(!strcmp(end, "G"))
-    size *= 1024 * 1024 * 1024;
-  else if(*end)
-    fatal(0, "invalid size");
+  long long size;
+  if(argc > 1) {
+    errno = 0;
+    char *end;
+    size = strtoll(argv[1], &end, 10);
+    if(errno)
+      fatal(errno, "invalid size");
+    if(end == argv[1])
+      fatal(0, "invalid size");
+    if(!strcmp(end, "K"))
+      size *= 1024;
+    else if(!strcmp(end, "M"))
+      size *= 1024 * 1024;
+    else if(!strcmp(end, "G"))
+      size *= 1024 * 1024 * 1024;
+    else if(*end)
+      fatal(0, "invalid size");
+  } else {
+    struct stat sb;
+    if(stat(path, &sb) < 0)
+      fatal(errno, "stat %s", path);
+    size = sb.st_size;
+  }
   Arcfour rng(seed, strlen(seed));
   FILE *fp = fopen(path, mode == VERIFY ? "rb" : "wb");
   if(!fp)
