@@ -121,42 +121,30 @@ int main(int argc, char **argv) {
   }
   argc -= optind;
   argv += optind;
-  if(mode == NONE) {
+  if(mode == NONE)
     fatal(0, "must specify one of --verify or --create");
-    exit(1);
-  }
-  if(argc != 2) {
+  if(argc != 2)
     fatal(0, "must specify a path and size");
-    exit(1);
-  }
   const char *path = argv[0];
   errno = 0;
   char *end;
   long long size = strtoll(argv[1], &end, 10);
-  if(errno) {
+  if(errno)
     fatal(errno, "invalid size");
-    exit(1);
-  }
-  if(end == argv[1]) {
+  if(end == argv[1])
     fatal(0, "invalid size");
-    exit(1);
-  }
   if(!strcmp(end, "K"))
     size *= 1024;
   else if(!strcmp(end, "M"))
     size *= 1024 * 1024;
   else if(!strcmp(end, "G"))
     size *= 1024 * 1024 * 1024;
-  else if(*end) {
+  else if(*end)
     fatal(0, "invalid size");
-    exit(1);
-  } 
   Arcfour rng(seed, strlen(seed));
   FILE *fp = fopen(path, mode == VERIFY ? "rb" : "wb");
-  if(!fp) {
+  if(!fp)
     fatal(errno, "%s", path);
-    exit(1);
-  }
   if(mode == VERIFY && flush)
     flushCache(fp);
   char generated[4096], input[4096];
@@ -168,46 +156,34 @@ int main(int argc, char **argv) {
     rng.stream(generated, bytesGenerated);
     if(mode == CREATE) {
       fwrite(generated, 1, bytesGenerated, fp);
-      if(ferror(fp)) {
+      if(ferror(fp))
         fatal(errno, "%s", path);
-        exit(1);
-      }
     } else {
       size_t bytesRead = fread(input, 1, bytesGenerated, fp);
-      if(ferror(fp)) {
+      if(ferror(fp))
         fatal(errno, "%s", path);
-        exit(1);
-      }
-      if(bytesRead < bytesGenerated) {
+      if(bytesRead < bytesGenerated)
         fatal(0, "%s: truncated at %lld/%lld bytes",
                 path, (size - remain + bytesRead), size);
-        exit(1);
-      }
       if(memcmp(generated, input, bytesGenerated)) {
         for(size_t n = 0; n < bytesGenerated; ++n)
-          if(generated[n] != input[n]){
+          if(generated[n] != input[n])
             fatal(0, "%s corrupted at %lld/%lld bytes (expected %d got %d)",
                     path, size - remain + n, size,
                     (unsigned char)generated[n], (unsigned char)input[n]);
-            exit(1);
-          }
       }
     }
     remain -= bytesGenerated;
   }
-  if(mode == VERIFY && getc(fp) != EOF) {
+  if(mode == VERIFY && getc(fp) != EOF)
     fatal(0, "%s: extended beyond %lld bytes",
             path, size);
-    exit(1);
-  }
   if(mode == CREATE && flush) {
     if(fflush(fp) < 0)
       fatal(errno, "%s", path);
     flushCache(fp);
   }
-  if(fclose(fp) < 0) {
+  if(fclose(fp) < 0)
     fatal(errno, "%s", path);
-    exit(1);
-  }
   return 0;
 }
