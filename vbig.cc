@@ -239,7 +239,7 @@ static void flushstdout() {
 
 static void clearprogress() {
   if (!progress) return;
-  printf(" %-10s %*s   \r", "", sizeof(long long)*4, "");
+  printf(" %-10s %*s   \r", "", (int)sizeof(long long)*4, "");
   flushstdout();
 }
 
@@ -253,7 +253,7 @@ static void showprogress(long long amount, const char *show) {
   int triples = sizeof(amount);
   char rawbuf[triples*3 + 1];
   char outbuf[triples*4 + 1];
-  snprintf(rawbuf, sizeof(rawbuf), "% *lld", sizeof(rawbuf)-1, amount);
+  snprintf(rawbuf, sizeof(rawbuf), "% *lld", (int)sizeof(rawbuf)-1, amount);
   for (int i=0; i<triples; i++) {
     outbuf[i*4] = ' ';
     memcpy(outbuf + i*4 + 1, rawbuf + i*3, 3);
