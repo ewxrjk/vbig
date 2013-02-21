@@ -111,8 +111,8 @@ static void flushCache(FILE *fp) {
 static long long execute(mode_type mode, bool entire, const char *show);
 
 static const char default_seed[] = "hexapodia as the key insight";
-static const void *seed = default_seed;
-static size_t seedlen = sizeof(default_seed)-1;
+static const void *seed;
+static size_t seedlen;
 static const char *path;
 static bool entireopt = false;
 static bool flush = false;
@@ -147,6 +147,10 @@ int main(int argc, char **argv) {
   } else {
     if(argc < (mode == VERIFY ? 1 : 2))
       fatal(0, "insufficient arguments");
+  }
+  if (!seed) {
+    seed = default_seed;
+    seedlen = sizeof(default_seed)-1;
   }
   path = argv[0];
   if(argc > 1) {
