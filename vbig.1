@@ -30,6 +30,20 @@ psuedo-random data, and/or verifies that it has the expected contents.
 The intended use is to test whether storage media really do what they
 say on the tin.
 .PP
+By default vbig will generate a new random seed, write data to the
+specified file or device until the device is full, read the data back
+to check that everything written was properly stored, and report
+the device's size.  Ideally, if you have privilege to do so, you
+would also specify \fB-f\fR (to flush the operating system disk
+cache between the write and read).
+.PP
+\fBPATH\fR can refer to an ordinary file on a mounted file system,
+which vbig will create or truncate as necessary, or a block device.
+Note that if its a file vbig won't delete it after it's done.  Also,
+be careful when specifying a block device - don't accidentally
+overwrite a filesystem you care about!  vbig doesn't do sanity checks
+and is as dangerous as \fBdd\fR.
+.PP
 \fISIZE\fR may end with \fBK\fR, \fBM\fR or \fBG\fR to select (binary)
 kilobytes, megabytes or gigabytes.
 The size is mandatory when creating a file but optional when verifying
