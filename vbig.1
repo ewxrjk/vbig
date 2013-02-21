@@ -36,7 +36,9 @@ The size is mandatory when creating a file but optional when verifying
 it, unless \-\-entire is specified.  If \fBSIZE\fR not specified when
 writing-then-verifying, it is as if \fB\-\-entire\fR was specified.
 .PP
-A fixed default seed is used if no seed or seed file is specified.
+If no seed or seed file is specified:
+in \fB--both\fR mode a fresh random seed is read from the system's
+random number generator; in other modes a fixed default seed is used.
 .SH OPTIONS
 .TP
 .B --seed\fR, \fB-s \fISEED

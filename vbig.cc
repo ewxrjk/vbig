@@ -163,6 +163,14 @@ int main(int argc, char **argv) {
   }
   if(seed && seedpath)
     fatal(0, "both --seed and --seed-file specified");
+  if(mode == BOTH && !seed && !seedpath) {
+#ifdef HAVE_RANDOM_DEVICE
+    seedpath = RANDOM_DEVICE;
+#else
+    fatal(0, "no --seed or --seed-file specified in --both mode"
+	  " and random device not supported on this system");
+#endif
+  }
   if(seedpath) {
     if(!seedlen)
       seedlen = DEFAULT_SEED_LENGTH;
