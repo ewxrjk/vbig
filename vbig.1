@@ -35,11 +35,22 @@ kilobytes, megabytes or gigabytes.
 The size is mandatory when creating a file but optional when verifying
 it, unless \-\-entire is specified.  If \fBSIZE\fR not specified when
 writing-then-verifying, it is as if \fB\-\-entire\fR was specified.
+.PP
+A fixed default seed is used if no seed or seed file is specified.
 .SH OPTIONS
 .TP
 .B --seed\fR, \fB-s \fISEED
 Specifies the random seed to use.
 Optional.
+.TP
+.B --seed-file\fR, \fB-S \fISEED-FILE
+Specifies wehre the random seed should be read from.  The
+first \fISEED-LENGTH\fR bytes will be used, or the whole file
+if it is shorter.
+.TP
+.B --seed-length\fR, \fB-L \fISEED-LENGTH
+Specifies the (maximum) seed length in bytes.
+Optional; default is 2048.
 .TP
 .B --both\fR, \fB-b
 Selects both mode.

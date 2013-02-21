@@ -29,9 +29,13 @@
 #include <sys/stat.h>
 #include "Arcfour.h"
 
+#define DEFAULT_SEED_LENGTH 2048;
+
 // Command line options
 const struct option opts[] = {
   { "seed", required_argument, 0, 's' },
+  { "seed-file", required_argument, 0, 'S' },
+  { "seed-length", required_argument, 0, 'L' },
   { "both", no_argument, 0, 'b' },
   { "verify", no_argument, 0, 'v' },
   { "create", no_argument, 0, 'c' },
@@ -50,7 +54,9 @@ static void help(void) {
          "  vbig [--seed SEED] --verify|--create PATH [SIZE]\n"
          "\n"
          "Options:\n"
-         "  --seed, -s     Specify random seed\n"
+         "  --seed, -s     Specify random seed as string\n"
+         "  --seed-file, -S Read random seed from (start of) this file\n"
+         "  --seed-length, -L Set (maximum) seed length to read from file\n"
          "  --verify, -v   Verify that PATH contains the expected contents\n"
          "  --create, -c   Create PATH with psuedo-random contents\n"
          "  --flush, -f    Flush cache\n"
@@ -111,8 +117,9 @@ static void flushCache(FILE *fp) {
 static long long execute(mode_type mode, bool entire, const char *show);
 
 static const char default_seed[] = "hexapodia as the key insight";
-static const void *seed;
+static void *seed;
 static size_t seedlen;
+static const char *seedpath;
 static const char *path;
 static bool entireopt = false;
 static bool flush = false;
@@ -121,9 +128,15 @@ static long long size;
 int main(int argc, char **argv) {
   mode_type mode = BOTH;
   int n;
-  while((n = getopt_long(argc, argv, "+s:vcefhV", opts, 0)) >= 0) {
+  char *ep;
+  while((n = getopt_long(argc, argv, "+s:S:L:vcefhV", opts, 0)) >= 0) {
     switch(n) {
     case 's': seed = optarg; seedlen = strlen(optarg); break;
+    case 'S': seedpath = optarg; break;
+    case 'L':
+      seedlen = strtoul(optarg,&ep,0);
+      if(ep==optarg || *ep) fatal(0, "bad number for -S");
+      break;
     case 'b': mode = BOTH; break;
     case 'v': mode = VERIFY; break;
     case 'c': mode = CREATE; break;
@@ -148,8 +161,24 @@ int main(int argc, char **argv) {
     if(argc < (mode == VERIFY ? 1 : 2))
       fatal(0, "insufficient arguments");
   }
+  if(seed && seedpath)
+    fatal(0, "both --seed and --seed-file specified");
+  if(seedpath) {
+    if(!seedlen)
+      seedlen = DEFAULT_SEED_LENGTH;
+    FILE *seedfile = fopen(seedpath, "rb");
+    if(!seedfile)
+      fatal(errno, "%s", seedpath);
+    seed = malloc(seedlen);
+    if(!seed)
+      fatal(errno, "allocate seed");
+    seedlen = fread(seed, 1, seedlen, seedfile);
+    if(ferror(seedfile))
+      fatal(errno, "read %s", seedpath);
+    fclose(seedfile);
+  }
   if (!seed) {
-    seed = default_seed;
+    seed = (void*)default_seed;
     seedlen = sizeof(default_seed)-1;
   }
   path = argv[0];
