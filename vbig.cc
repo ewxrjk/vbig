@@ -103,10 +103,15 @@ static void flushCache(FILE *fp) {
 #endif
 }
 
+static void execute(mode_type mode);
+
+static const char *seed = "hexapodia as the key insight";
+static const char *path;
+static bool flush = false;
+static long long size;
+
 int main(int argc, char **argv) {
-  const char *seed = "hexapodia as the key insight";
   mode_type mode = NONE;
-  bool flush = false;
   int n;
   while((n = getopt_long(argc, argv, "+s:vcfhV", opts, 0)) >= 0) {
     switch(n) {
@@ -128,8 +133,7 @@ int main(int argc, char **argv) {
     fatal(0, "excess arguments");
   if(argc < (mode == VERIFY ? 1 : 2))
     fatal(0, "insufficient arguments");
-  const char *path = argv[0];
-  long long size;
+  path = argv[0];
   if(argc > 1) {
     errno = 0;
     char *end;
@@ -152,6 +156,11 @@ int main(int argc, char **argv) {
       fatal(errno, "stat %s", path);
     size = sb.st_size;
   }
+  execute(mode);
+  return 0;
+}
+
+static void execute(mode_type mode) {
   Arcfour rng(seed, strlen(seed));
   FILE *fp = fopen(path, mode == VERIFY ? "rb" : "wb");
   if(!fp)
@@ -196,5 +205,4 @@ int main(int argc, char **argv) {
   }
   if(fclose(fp) < 0)
     fatal(errno, "%s", path);
-  return 0;
 }
