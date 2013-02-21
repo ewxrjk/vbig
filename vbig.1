@@ -19,7 +19,7 @@
 .SH NAME
 vbig \- create or verify a large but pseudo-random file
 .SH SYNOPSIS
-\fBvbig \fR[\fB--seed \fRSEED\fR] \fB--both\fR|\fB--create\fR|\fB--verify\fR \fIPATH \fR[\fISIZE\fR]
+\fBvbig \fR[\fB--seed \fRSEED\fR] [\fB--both\fR|\fB--create\fR|\fB--verify\fR] \fIPATH \fR[\fISIZE\fR]
 .br
 \fBvbig --help
 .br
@@ -45,6 +45,7 @@ Optional.
 Selects both mode.
 \fIPATH\fR will be filled with \fISIZE\fR psuedo-random bytes and
 then read to check that it contains the data just written.
+This is the default.
 .TP
 .B --create\fR, \fB-c
 Selects create mode.

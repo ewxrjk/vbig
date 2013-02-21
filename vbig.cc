@@ -61,7 +61,6 @@ static void help(void) {
 
 // Possible modes of operation
 enum mode_type {
-  NONE,
   VERIFY,
   CREATE,
   BOTH
@@ -118,7 +117,7 @@ static bool flush = false;
 static long long size;
 
 int main(int argc, char **argv) {
-  mode_type mode = NONE;
+  mode_type mode = BOTH;
   int n;
   while((n = getopt_long(argc, argv, "+s:vcefhV", opts, 0)) >= 0) {
     switch(n) {
@@ -136,8 +135,6 @@ int main(int argc, char **argv) {
   }
   argc -= optind;
   argv += optind;
-  if(mode == NONE)
-    fatal(0, "must specify one of --verify or --create");
   if(argc > 2)
     fatal(0, "excess arguments");
   if(argc == 1 && mode == BOTH)
