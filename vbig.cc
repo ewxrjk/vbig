@@ -192,6 +192,9 @@ static long long execute(mode_type mode, bool entire, const char *show) {
     setvbuf(fp, 0, _IONBF, 0);
   char generated[4096], input[4096];
   long long remain = size;
+  static const size_t rc4drop = 3072; // en.wikipedia.org/wiki/RC4#Security
+  assert(rc4drop <= sizeof(generated));
+  rng.stream(generated, rc4drop);
   while(remain > 0) {
     size_t bytesGenerated = (remain > (ssize_t)sizeof generated
                              ? sizeof generated
