@@ -24,6 +24,8 @@
 #include <getopt.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <limits.h>
+#include <assert.h>
 #include <sys/stat.h>
 #include "Arcfour.h"
 
@@ -33,6 +35,7 @@ const struct option opts[] = {
   { "verify", no_argument, 0, 'v' },
   { "create", no_argument, 0, 'c' },
   { "flush", no_argument, 0, 'f' },
+  { "entire", no_argument, 0, 'e' },
   { "help", no_argument, 0, 'h' },
   { "version", no_argument, 0, 'V' },
   { 0, 0, 0, 0 },
@@ -50,6 +53,7 @@ static void help(void) {
          "  --verify, -v   Verify that PATH contains the expected contents\n"
          "  --create, -c   Create PATH with psuedo-random contents\n"
          "  --flush, -f    Flush cache\n"
+         "  --entire, -e   Write until full; read until EOF\n"
          "  --help, -h     Display usage message\n"
          "  --version, -V  Display version string\n");
 }
@@ -103,21 +107,23 @@ static void flushCache(FILE *fp) {
 #endif
 }
 
-static void execute(mode_type mode);
+static void execute(mode_type mode, bool entire, const char *show);
 
 static const char *seed = "hexapodia as the key insight";
 static const char *path;
+static bool entireopt = false;
 static bool flush = false;
 static long long size;
 
 int main(int argc, char **argv) {
   mode_type mode = NONE;
   int n;
-  while((n = getopt_long(argc, argv, "+s:vcfhV", opts, 0)) >= 0) {
+  while((n = getopt_long(argc, argv, "+s:vcefhV", opts, 0)) >= 0) {
     switch(n) {
     case 's': seed = optarg; break;
     case 'v': mode = VERIFY; break;
     case 'c': mode = CREATE; break;
+    case 'e': entireopt = true; break;
     case 'f': flush = true; break;
     case 'h': help(); exit(0);
     case 'V': puts(VERSION); exit(0);
@@ -131,8 +137,13 @@ int main(int argc, char **argv) {
     fatal(0, "must specify one of --verify or --create");
   if(argc > 2)
     fatal(0, "excess arguments");
-  if(argc < (mode == VERIFY ? 1 : 2))
-    fatal(0, "insufficient arguments");
+  if(entireopt) {
+    if(argc != 1)
+      fatal(0, "with --entire, size should not be specified");
+  } else {
+    if(argc < (mode == VERIFY ? 1 : 2))
+      fatal(0, "insufficient arguments");
+  }
   path = argv[0];
   if(argc > 1) {
     errno = 0;
@@ -150,23 +161,28 @@ int main(int argc, char **argv) {
       size *= 1024 * 1024 * 1024;
     else if(*end)
       fatal(0, "invalid size");
+  } else if(entireopt) {
+    size = LONG_LONG_MAX;
   } else {
     struct stat sb;
     if(stat(path, &sb) < 0)
       fatal(errno, "stat %s", path);
     size = sb.st_size;
   }
-  execute(mode);
+  const char *show = entireopt ? (mode == CREATE ? "written" : "verified") : 0;
+  execute(mode, entireopt, show);
   return 0;
 }
 
-static void execute(mode_type mode) {
+static void execute(mode_type mode, bool entire, const char *show) {
   Arcfour rng(seed, strlen(seed));
   FILE *fp = fopen(path, mode == VERIFY ? "rb" : "wb");
   if(!fp)
     fatal(errno, "%s", path);
   if(mode == VERIFY && flush)
     flushCache(fp);
+  if(mode == CREATE && entire)
+    setvbuf(fp, 0, _IONBF, 0);
   char generated[4096], input[4096];
   long long remain = size;
   while(remain > 0) {
@@ -175,27 +191,38 @@ static void execute(mode_type mode) {
                              : remain);
     rng.stream(generated, bytesGenerated);
     if(mode == CREATE) {
-      fwrite(generated, 1, bytesGenerated, fp);
-      if(ferror(fp))
-        fatal(errno, "%s", path);
+      size_t bytesWritten = fwrite(generated, 1, bytesGenerated, fp);
+      if(ferror(fp)) {
+	if(!entire || errno != ENOSPC)
+	  fatal(errno, "%s", path);
+	remain -= bytesWritten;
+	break;
+      }
+      assert(bytesWritten == bytesGenerated);
     } else {
       size_t bytesRead = fread(input, 1, bytesGenerated, fp);
       if(ferror(fp))
         fatal(errno, "%s", path);
-      if(bytesRead < bytesGenerated)
-        fatal(0, "%s: truncated at %lld/%lld bytes",
-                path, (size - remain + bytesRead), size);
-      if(memcmp(generated, input, bytesGenerated)) {
-        for(size_t n = 0; n < bytesGenerated; ++n)
+      if(memcmp(generated, input, bytesRead)) {
+        for(size_t n = 0; n < bytesRead; ++n)
           if(generated[n] != input[n])
             fatal(0, "%s corrupted at %lld/%lld bytes (expected %d got %d)",
                     path, size - remain + n, size,
                     (unsigned char)generated[n], (unsigned char)input[n]);
       }
+      if(bytesRead < bytesGenerated) {
+	if(entire) {
+	  assert(feof(fp));
+	  remain -= bytesRead;
+	  break;
+	}
+        fatal(0, "%s: truncated at %lld/%lld bytes",
+                path, (size - remain + bytesRead), size);
+      }
     }
     remain -= bytesGenerated;
   }
-  if(mode == VERIFY && getc(fp) != EOF)
+  if(mode == VERIFY && !entire && getc(fp) != EOF)
     fatal(0, "%s: extended beyond %lld bytes",
             path, size);
   if(mode == CREATE && flush) {
@@ -205,4 +232,12 @@ static void execute(mode_type mode) {
   }
   if(fclose(fp) < 0)
     fatal(errno, "%s", path);
+  long long done = size - remain;
+  if(show) {
+    printf("%lld bytes (%lldM, %lldG) %s\n",
+	   done, done >> 20, done >> 30,
+	   show);
+    if(ferror(stdout) || fflush(stdout))
+      fatal(errno, "flush stdout");
+  }
 }

@@ -33,7 +33,7 @@ say on the tin.
 \fISIZE\fR may end with \fBK\fR, \fBM\fR or \fBG\fR to select (binary)
 kilobytes, megabytes or gigabytes.
 The size is mandatory when creating a file but optional when verifying
-it.
+it, unless \-\-entire is specified.
 .SH OPTIONS
 .TP
 .B --seed\fR, \fB-s \fISEED
@@ -52,6 +52,12 @@ by the equivalent \fB--create\fR call.
 .B --flush\fR, \fB-f
 Flush cached data after creating the file or before verifying it.
 On some platforms, only root can use this option.
+.TP
+.B --entire\fR, \fB-e
+When writing, keep going until the device is full (No space left
+on device).  When reading, keep going until the end of the file
+or device.  \fISIZE\fR should not be specified.  The actual size
+written or verified will be printed to stdout.
 .TP
 .B --help\fR, \fB-h
 Displays a usage message.
