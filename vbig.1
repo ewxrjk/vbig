@@ -35,7 +35,7 @@ specified file or device until the device is full, read the data back
 to check that everything written was properly stored, and report
 the device's size.  Ideally, if you have privilege to do so, you
 would also specify \fB-f\fR (to flush the operating system disk
-cache between the write and read).
+cache between the write and read).  Also you probably want \fB-p\fR.
 .PP
 \fBPATH\fR can refer to an ordinary file on a mounted file system,
 which vbig will create or truncate as necessary, or a block device.
@@ -86,6 +86,9 @@ by the equivalent \fB--create\fR call.
 .B --flush\fR, \fB-f
 Flush cached data after creating the file or before verifying it.
 On some platforms, only root can use this option.
+.TP
+.B --progress\fR, \fB-p
+Show the progress (in bytes) on stdout.
 .TP
 .B --entire\fR, \fB-e
 When writing, keep going until the device is full (No space left

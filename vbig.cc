@@ -41,6 +41,7 @@ const struct option opts[] = {
   { "create", no_argument, 0, 'c' },
   { "flush", no_argument, 0, 'f' },
   { "entire", no_argument, 0, 'e' },
+  { "progress", no_argument, 0, 'p' },
   { "help", no_argument, 0, 'h' },
   { "version", no_argument, 0, 'V' },
   { 0, 0, 0, 0 },
@@ -61,6 +62,7 @@ static void help(void) {
          "  --create, -c      Create PATH with psuedo-random contents\n"
          "  --flush, -f       Flush cache\n"
          "  --entire, -e      Write until full; read until EOF\n"
+         "  --progress, -p    Show progress as we go\n"
          "  --help, -h        Display usage message\n"
          "  --version, -V     Display version string\n");
 }
@@ -72,9 +74,12 @@ enum mode_type {
   BOTH
 };
 
+static void clearprogress();
+
 // Report an error and exit
 static void fatal(int errno_value, const char *fmt, ...) {
   va_list ap;
+  clearprogress();
   fprintf(stderr, "ERROR: ");
   va_start(ap, fmt);
   vfprintf(stderr, fmt, ap);
@@ -123,13 +128,14 @@ static const char *seedpath;
 static const char *path;
 static bool entireopt = false;
 static bool flush = false;
+static bool progress = false;
 static long long size;
 
 int main(int argc, char **argv) {
   mode_type mode = BOTH;
   int n;
   char *ep;
-  while((n = getopt_long(argc, argv, "+s:S:L:vcefhV", opts, 0)) >= 0) {
+  while((n = getopt_long(argc, argv, "+s:S:L:vcepfhV", opts, 0)) >= 0) {
     switch(n) {
     case 's': seed = optarg; seedlen = strlen(optarg); break;
     case 'S': seedpath = optarg; break;
@@ -141,6 +147,7 @@ int main(int argc, char **argv) {
     case 'v': mode = VERIFY; break;
     case 'c': mode = CREATE; break;
     case 'e': entireopt = true; break;
+    case 'p': progress = true; break;
     case 'f': flush = true; break;
     case 'h': help(); exit(0);
     case 'V': puts(VERSION); exit(0);
@@ -224,6 +231,37 @@ int main(int argc, char **argv) {
   return 0;
 }
 
+static void flushstdout() {
+  if(ferror(stdout) || fflush(stdout))
+    fatal(errno, "flush stdout");
+}
+
+static void clearprogress() {
+  if (!progress) return;
+  printf(" %-10s %*s   \r", "", sizeof(long long)*4, "");
+  flushstdout();
+}
+
+static void showprogress(long long amount, const char *show) {
+  if (!progress) return;
+
+  static int counter;
+  if (counter++ < 1000) return;
+  counter = 0;
+
+  int triples = sizeof(amount);
+  char rawbuf[triples*3 + 1];
+  char outbuf[triples*4 + 1];
+  snprintf(rawbuf, sizeof(rawbuf), "% *lld", sizeof(rawbuf)-1, amount);
+  for (int i=0; i<triples; i++) {
+    outbuf[i*4] = ' ';
+    memcpy(outbuf + i*4 + 1, rawbuf + i*3, 3);
+  }
+  outbuf[triples*4] = 0;
+  printf(" %-10s %s...\r", outbuf, show);
+  flushstdout();
+}
+
 static long long execute(mode_type mode, bool entire, const char *show) {
   Arcfour rng((const char*)seed, seedlen);
   FILE *fp = fopen(path, mode == VERIFY ? "rb" : "wb");
@@ -274,7 +312,9 @@ static long long execute(mode_type mode, bool entire, const char *show) {
       }
     }
     remain -= bytesGenerated;
+    showprogress(size - remain, mode == VERIFY ? "verifying" : "writing");
   }
+  clearprogress();
   if(mode == VERIFY && !entire && getc(fp) != EOF)
     fatal(0, "%s: extended beyond %lld bytes",
             path, size);
@@ -290,8 +330,7 @@ static long long execute(mode_type mode, bool entire, const char *show) {
     printf("%lld bytes (%lldM, %lldG) %s\n",
 	   done, done >> 20, done >> 30,
 	   show);
-    if(ferror(stdout) || fflush(stdout))
-      fatal(errno, "flush stdout");
+    flushstdout();
   }
   return done;
 }
