@@ -110,7 +110,9 @@ static void flushCache(FILE *fp) {
 
 static long long execute(mode_type mode, bool entire, const char *show);
 
-static const char *seed = "hexapodia as the key insight";
+static const char default_seed[] = "hexapodia as the key insight";
+static const void *seed = default_seed;
+static size_t seedlen = sizeof(default_seed)-1;
 static const char *path;
 static bool entireopt = false;
 static bool flush = false;
@@ -121,7 +123,7 @@ int main(int argc, char **argv) {
   int n;
   while((n = getopt_long(argc, argv, "+s:vcefhV", opts, 0)) >= 0) {
     switch(n) {
-    case 's': seed = optarg; break;
+    case 's': seed = optarg; seedlen = strlen(optarg); break;
     case 'b': mode = BOTH; break;
     case 'v': mode = VERIFY; break;
     case 'c': mode = CREATE; break;
@@ -182,7 +184,7 @@ int main(int argc, char **argv) {
 }
 
 static long long execute(mode_type mode, bool entire, const char *show) {
-  Arcfour rng(seed, strlen(seed));
+  Arcfour rng((const char*)seed, seedlen);
   FILE *fp = fopen(path, mode == VERIFY ? "rb" : "wb");
   if(!fp)
     fatal(errno, "%s", path);
