@@ -54,15 +54,15 @@ static void help(void) {
          "  vbig [--seed SEED] --verify|--create PATH [SIZE]\n"
          "\n"
          "Options:\n"
-         "  --seed, -s     Specify random seed as string\n"
-         "  --seed-file, -S Read random seed from (start of) this file\n"
+         "  --seed, -s        Specify random seed as string\n"
+         "  --seed-file, -S   Read random seed from (start of) this file\n"
          "  --seed-length, -L Set (maximum) seed length to read from file\n"
-         "  --verify, -v   Verify that PATH contains the expected contents\n"
-         "  --create, -c   Create PATH with psuedo-random contents\n"
-         "  --flush, -f    Flush cache\n"
-         "  --entire, -e   Write until full; read until EOF\n"
-         "  --help, -h     Display usage message\n"
-         "  --version, -V  Display version string\n");
+         "  --verify, -v      Verify that PATH contains the expected contents\n"
+         "  --create, -c      Create PATH with psuedo-random contents\n"
+         "  --flush, -f       Flush cache\n"
+         "  --entire, -e      Write until full; read until EOF\n"
+         "  --help, -h        Display usage message\n"
+         "  --version, -V     Display version string\n");
 }
 
 // Possible modes of operation
