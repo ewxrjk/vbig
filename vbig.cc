@@ -32,6 +32,7 @@
 // Command line options
 const struct option opts[] = {
   { "seed", required_argument, 0, 's' },
+  { "both", no_argument, 0, 'b' },
   { "verify", no_argument, 0, 'v' },
   { "create", no_argument, 0, 'c' },
   { "flush", no_argument, 0, 'f' },
@@ -62,7 +63,8 @@ static void help(void) {
 enum mode_type {
   NONE,
   VERIFY,
-  CREATE
+  CREATE,
+  BOTH
 };
 
 // Report an error and exit
@@ -107,7 +109,7 @@ static void flushCache(FILE *fp) {
 #endif
 }
 
-static void execute(mode_type mode, bool entire, const char *show);
+static long long execute(mode_type mode, bool entire, const char *show);
 
 static const char *seed = "hexapodia as the key insight";
 static const char *path;
@@ -121,6 +123,7 @@ int main(int argc, char **argv) {
   while((n = getopt_long(argc, argv, "+s:vcefhV", opts, 0)) >= 0) {
     switch(n) {
     case 's': seed = optarg; break;
+    case 'b': mode = BOTH; break;
     case 'v': mode = VERIFY; break;
     case 'c': mode = CREATE; break;
     case 'e': entireopt = true; break;
@@ -137,6 +140,8 @@ int main(int argc, char **argv) {
     fatal(0, "must specify one of --verify or --create");
   if(argc > 2)
     fatal(0, "excess arguments");
+  if(argc == 1 && mode == BOTH)
+    entireopt = true;
   if(entireopt) {
     if(argc != 1)
       fatal(0, "with --entire, size should not be specified");
@@ -170,11 +175,16 @@ int main(int argc, char **argv) {
     size = sb.st_size;
   }
   const char *show = entireopt ? (mode == CREATE ? "written" : "verified") : 0;
-  execute(mode, entireopt, show);
+  if(mode == BOTH) {
+    size = execute(CREATE, entireopt, 0);
+    execute(VERIFY, false, show);
+  } else {
+    execute(mode, entireopt, show);
+  }
   return 0;
 }
 
-static void execute(mode_type mode, bool entire, const char *show) {
+static long long execute(mode_type mode, bool entire, const char *show) {
   Arcfour rng(seed, strlen(seed));
   FILE *fp = fopen(path, mode == VERIFY ? "rb" : "wb");
   if(!fp)
@@ -240,4 +250,5 @@ static void execute(mode_type mode, bool entire, const char *show) {
     if(ferror(stdout) || fflush(stdout))
       fatal(errno, "flush stdout");
   }
+  return done;
 }

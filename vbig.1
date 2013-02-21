@@ -19,26 +19,32 @@
 .SH NAME
 vbig \- create or verify a large but pseudo-random file
 .SH SYNOPSIS
-\fBvbig \fR[\fB--seed \fRSEED\fR] \fB--create\fR|\fB--verify \fIPATH \fR[\fISIZE\fR]
+\fBvbig \fR[\fB--seed \fRSEED\fR] \fB--both\fR|\fB--create\fR|\fB--verify\fR \fIPATH \fR[\fISIZE\fR]
 .br
 \fBvbig --help
 .br
 \fBvbig --version
 .SH DESCRIPTION
-\fBvbig\fR either creates a file of specified size full of predictable
-psuedo-random data, or verifies that it has the expected contents.
+\fBvbig\fR creates a file of specified size full of predictable
+psuedo-random data, and/or verifies that it has the expected contents.
 The intended use is to test whether storage media really do what they
 say on the tin.
 .PP
 \fISIZE\fR may end with \fBK\fR, \fBM\fR or \fBG\fR to select (binary)
 kilobytes, megabytes or gigabytes.
 The size is mandatory when creating a file but optional when verifying
-it, unless \-\-entire is specified.
+it, unless \-\-entire is specified.  If \fBSIZE\fR not specified when
+writing-then-verifying, it is as if \fB\-\-entire\fR was specified.
 .SH OPTIONS
 .TP
 .B --seed\fR, \fB-s \fISEED
 Specifies the random seed to use.
 Optional.
+.TP
+.B --both\fR, \fB-b
+Selects both mode.
+\fIPATH\fR will be filled with \fISIZE\fR psuedo-random bytes and
+then read to check that it contains the data just written.
 .TP
 .B --create\fR, \fB-c
 Selects create mode.
