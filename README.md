@@ -5,20 +5,20 @@ vbig creates or verifies a file full of psuedo-random data.
 The intended use is to verify that storage media work properly.
 
 Installation
-============
+------------
 
 If you got it from git:
 
-  autoreconf -is
+    autoreconf -is
 
 In any case:
 
-  ./configure
-  make
-  sudo make install
+    ./configure
+    make
+    sudo make install
 
 Author
-======
+------
 
 Copyright (C) 2011, 2013 Richard Kettlewell
 Copyright (C) 2000, 2001, 2002, 2003, 2005, 2006 Free Software Foundation, Inc.
