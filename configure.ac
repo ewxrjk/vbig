@@ -1,5 +1,5 @@
 AC_PREREQ([2.61])
-AC_INIT([vbig], [0.0.DEV], [rjk@greenend.org.uk])
+AC_INIT([vbig], [0.3], [rjk@greenend.org.uk])
 m4_include([m4/ax_random_device.m4])
 AC_CONFIG_AUX_DIR([config.aux])
 AM_INIT_AUTOMAKE([foreign])

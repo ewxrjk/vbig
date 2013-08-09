@@ -1,0 +1,13 @@
+Source: vbig
+Section: admin
+Priority: optional
+Maintainer: Richard Kettlewell <rjk@greenend.org.uk>
+Standards-Version: 3.9.2
+Homepage: https://github.com/ewxrjk/vbig
+
+Package: vbig
+Architecture: any
+Depends: ${misc:Depends},${shlibs:Depends}
+Description: Test storage device integrity
+ Creates or verifies a file full of psuedo-random data.
+ The intended use is to verify that storage media work properly.

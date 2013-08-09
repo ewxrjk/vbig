@@ -14,3 +14,6 @@ configure
 stamp-h1
 vbig
 *~
+debian/*.log
+debian/files
+debian/*substvars
