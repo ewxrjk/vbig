@@ -216,7 +216,7 @@ int main(int argc, char **argv) {
     else if(*end)
       fatal(0, "invalid size");
   } else if(entireopt) {
-    size = LONG_LONG_MAX;
+    size = LLONG_MAX;
   } else {
     struct stat sb;
     if(stat(path, &sb) < 0)
