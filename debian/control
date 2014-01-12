@@ -9,5 +9,5 @@ Package: vbig
 Architecture: any
 Depends: ${misc:Depends},${shlibs:Depends}
 Description: Test storage device integrity
- Creates or verifies a file full of psuedo-random data.
+ Creates or verifies a file full of pseudo-random data.
  The intended use is to verify that storage media work properly.
