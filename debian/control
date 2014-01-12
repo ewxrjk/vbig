@@ -10,4 +10,8 @@ Architecture: any
 Depends: ${misc:Depends},${shlibs:Depends}
 Description: Test storage device integrity
  Creates or verifies a file full of pseudo-random data.
+ .
  The intended use is to verify that storage media work properly.
+ .
+ For instance, you might use it on a newly purchased SD card to
+ check that its actual capacity matches the advertized capacity.
