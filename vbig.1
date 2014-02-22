@@ -38,9 +38,9 @@ the device's size.  Ideally, if you have privilege to do so, you
 would also specify \fB-f\fR (to flush the operating system disk
 cache between the write and read).  Also you probably want \fB-p\fR.
 .PP
-\fBPATH\fR can refer to an ordinary file on a mounted file system,
+\fIPATH\fR can refer to an ordinary file on a mounted file system,
 which vbig will create or truncate as necessary, or a block device.
-Note that if its a file vbig won't delete it after it's done.  Also,
+Note that if it's a file, vbig won't delete it after it's done.  Also,
 be careful when specifying a block device - don't accidentally
 overwrite a filesystem you care about!  vbig doesn't do sanity checks
 and is as dangerous as \fBdd\fR.
@@ -48,7 +48,7 @@ and is as dangerous as \fBdd\fR.
 \fISIZE\fR may end with \fBK\fR, \fBM\fR or \fBG\fR to select (binary)
 kilobytes, megabytes or gigabytes.
 The size is mandatory when creating a file but optional when verifying
-it, unless \-\-entire is specified.  If \fBSIZE\fR not specified when
+it, unless \-\-entire is specified.  If \fISIZE\fR not specified when
 writing-then-verifying, it is as if \fB\-\-entire\fR was specified.
 .PP
 If no seed or seed file is specified:
