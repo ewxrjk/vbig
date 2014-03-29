@@ -159,20 +159,25 @@ int main(int argc, char **argv) {
   }
   argc -= optind;
   argv += optind;
+  /* expect PATH [SIZE] */
   if(argc > 2)
     fatal(0, "excess arguments");
+  /* If --both but no SIZE, assume a block device, which is to be filled */
   if(argc == 1 && mode == BOTH)
     entireopt = true;
   if(entireopt) {
     if(argc != 1)
       fatal(0, "with --entire, size should not be specified");
   } else {
+    /* --create without --entire requires PATH SIZE
+     * --verify just requires PATH, SIZE is optional */
     if(argc < (mode == VERIFY ? 1 : 2))
       fatal(0, "insufficient arguments");
   }
   if(seed && seedpath)
     fatal(0, "both --seed and --seed-file specified");
   if(mode == BOTH && !seed && !seedpath) {
+    /* --both and no seed specified; pick a random one */
 #ifdef HAVE_RANDOM_DEVICE
     seedpath = RANDOM_DEVICE;
 #else
@@ -195,11 +200,13 @@ int main(int argc, char **argv) {
     fclose(seedfile);
   }
   if (!seed) {
+    /* No seed specified, use a constant */
     seed = (void*)default_seed;
     seedlen = sizeof(default_seed)-1;
   }
   path = argv[0];
   if(argc > 1) {
+    /* Explicit size specified */
     errno = 0;
     char *end;
     size = strtoll(argv[1], &end, 10);
@@ -216,8 +223,10 @@ int main(int argc, char **argv) {
     else if(*end)
       fatal(0, "invalid size");
   } else if(entireopt) {
+    /* Use stupidly large size as a proxy for 'infinite' */
     size = LLONG_MAX;
   } else {
+    /* Retrieve size from target (which must exist) */
     struct stat sb;
     if(stat(path, &sb) < 0)
       fatal(errno, "stat %s", path);
@@ -233,17 +242,20 @@ int main(int argc, char **argv) {
   return 0;
 }
 
+// flush stdout, fatal on error
 static void flushstdout() {
   if(ferror(stdout) || fflush(stdout))
     fatal(errno, "flush stdout");
 }
 
+// clear the progress indicator
 static void clearprogress() {
   if (!progress) return;
   printf(" %-10s %*s   \r", "", (int)sizeof(long long)*4, "");
   flushstdout();
 }
 
+// update progress indicator
 static void showprogress(long long amount, const char *show) {
   if (!progress) return;
 
@@ -264,6 +276,7 @@ static void showprogress(long long amount, const char *show) {
   flushstdout();
 }
 
+// write/verify the target file
 static long long execute(mode_type mode, bool entire, const char *show) {
   Arcfour rng((const char*)seed, seedlen);
   FILE *fp = fopen(path, mode == VERIFY ? "rb" : "wb");
@@ -303,6 +316,7 @@ static long long execute(mode_type mode, bool entire, const char *show) {
                     path, size - remain + n, size,
                     (unsigned char)generated[n], (unsigned char)input[n]);
       }
+      /* Truncated */
       if(bytesRead < bytesGenerated) {
 	if(entire) {
 	  assert(feof(fp));
@@ -327,6 +341,7 @@ static long long execute(mode_type mode, bool entire, const char *show) {
   }
   if(fclose(fp) < 0)
     fatal(errno, "%s", path);
+  /* Actual size written/verified */
   long long done = size - remain;
   if(show) {
     printf("%lld bytes (%lldM, %lldG) %s\n",
