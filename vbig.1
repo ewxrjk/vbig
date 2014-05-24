@@ -27,7 +27,7 @@ vbig \- create or verify a large but pseudo-random file
 \fBvbig \-\-version
 .SH DESCRIPTION
 \fBvbig\fR creates a file of specified size full of predictable
-psuedo-random data, and/or verifies that it has the expected contents.
+pseudo-random data, and/or verifies that it has the expected contents.
 The intended use is to test whether storage media really do what they
 say on the tin.
 .PP
@@ -61,7 +61,7 @@ Specifies the random seed to use.
 Optional.
 .TP
 .B --seed-file\fR, \fB-S \fISEED-FILE
-Specifies wehre the random seed should be read from.  The
+Specifies where the random seed should be read from.  The
 first \fISEED-LENGTH\fR bytes will be used, or the whole file
 if it is shorter.
 .TP
@@ -71,13 +71,13 @@ Optional; default is 2048.
 .TP
 .B --both\fR, \fB-b
 Selects both mode.
-\fIPATH\fR will be filled with \fISIZE\fR psuedo-random bytes and
+\fIPATH\fR will be filled with \fISIZE\fR pseudo-random bytes and
 then read to check that it contains the data just written.
 This is the default.
 .TP
 .B --create\fR, \fB-c
 Selects create mode.
-\fIPATH\fR will be filled with \fISIZE\fR psuedo-random bytes.
+\fIPATH\fR will be filled with \fISIZE\fR pseudo-random bytes.
 .TP
 .B --verify\fR, \fB-v
 Selects verify mode.
