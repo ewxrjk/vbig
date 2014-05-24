@@ -278,7 +278,7 @@ static void showprogress(long long amount, const char *show) {
 
 // write/verify the target file
 static long long execute(mode_type mode, bool entire, const char *show) {
-  Arcfour rng((const char*)seed, seedlen);
+  Arcfour rng((const uint8_t *)seed, seedlen);
   FILE *fp = fopen(path, mode == VERIFY ? "rb" : "wb");
   if(!fp)
     fatal(errno, "%s", path);
@@ -286,7 +286,7 @@ static long long execute(mode_type mode, bool entire, const char *show) {
     flushCache(fp);
   if(mode == CREATE && entire)
     setvbuf(fp, 0, _IONBF, 0);
-  char generated[4096], input[4096];
+  uint8_t generated[4096], input[4096];
   long long remain = size;
   static const size_t rc4drop = 3072; // en.wikipedia.org/wiki/RC4#Security
   assert(rc4drop <= sizeof(generated));

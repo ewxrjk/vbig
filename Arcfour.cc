@@ -21,7 +21,7 @@
 #include <config.h>
 #include "Arcfour.h"
 
-void Arcfour::stream(char *outbuf, size_t length) {
+void Arcfour::stream(uint8_t *outbuf, size_t length) {
   uint8_t i = idx_i;
   uint8_t j = idx_j;
   
@@ -40,7 +40,7 @@ void Arcfour::stream(char *outbuf, size_t length) {
   idx_j = j;
 }
 
-Arcfour::Arcfour(const char *key, size_t keylen) {
+Arcfour::Arcfour(const uint8_t *key, size_t keylen) {
   size_t i, j, k;
   idx_i = idx_j = 0;
   for (i = 0; i < ARCFOUR_SBOX_SIZE; i++)

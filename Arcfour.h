@@ -30,11 +30,11 @@
 #define ARCFOUR_SBOX_SIZE 256
 
 class Arcfour {
-  char sbox[ARCFOUR_SBOX_SIZE];
+  uint8_t sbox[ARCFOUR_SBOX_SIZE];
   uint8_t idx_i, idx_j;
 public:
-  Arcfour(const char *key, size_t keylen);
-  void stream(char *outbuf, size_t length);
+  Arcfour(const uint8_t *key, size_t keylen);
+  void stream(uint8_t *outbuf, size_t length);
 };
 
 #endif /* ARCFOUR_H */
