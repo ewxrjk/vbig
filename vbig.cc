@@ -121,6 +121,18 @@ static void flushCache(FILE *fp) {
 #endif
 }
 
+static void scale(int shift, long long &value) {
+  switch(shift) {
+  case 'K': shift = 10; break;
+  case 'M': shift = 20; break;
+  case 'G': shift = 30; break;
+  default: fatal(0, "invalid scale");
+  }
+  if(value > (LLONG_MAX >> shift))
+    fatal(0, "invalid size");
+  value <<= shift;
+}
+
 static long long execute(mode_type mode, bool entire, const char *show);
 
 static const char default_seed[] = "hexapodia as the key insight";
@@ -214,14 +226,11 @@ int main(int argc, char **argv) {
       fatal(errno, "invalid size");
     if(end == argv[1])
       fatal(0, "invalid size");
-    if(!strcmp(end, "K"))
-      size <<= 10;
-    else if(!strcmp(end, "M"))
-      size <<= 20;
-    else if(!strcmp(end, "G"))
-      size <<= 30;
-    else if(*end)
-      fatal(0, "invalid size");
+    if(*end) {
+      if(end[1])
+        fatal(0, "invalid scale");
+      scale(*end, size);
+    }
   } else if(entireopt) {
     /* Use stupidly large size as a proxy for 'infinite' */
     size = LLONG_MAX;

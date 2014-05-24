@@ -1,0 +1,39 @@
+#! /bin/sh
+set -e
+rm -f testoutput testexpect
+
+echo 'ERROR: invalid size: Numerical result out of range' > testexpect
+if ./vbig testfile 9223372036854775808 2>testoutput; then
+  echo >&2 ERROR: unexpectedly succeeded
+  exit 1
+fi
+diff -u testexpect testoutput
+
+echo 'ERROR: invalid size' > testexpect
+if ./vbig testfile 9007199254740992K 2>testoutput; then
+  echo >&2 ERROR: unexpectedly succeeded
+  exit 1
+fi
+diff -u testexpect testoutput
+
+if ./vbig testfile 8796093022208G 2>testoutput; then
+  echo >&2 ERROR: unexpectedly succeeded
+  exit 1
+fi
+diff -u testexpect testoutput
+
+echo 'ERROR: invalid scale' > testexpect
+if ./vbig testfile 1T 2>testoutput; then
+  echo >&2 ERROR: unexpectedly succeeded
+  exit 1
+fi
+diff -u testexpect testoutput
+
+if ./vbig testfile 1KK 2>testoutput; then
+  echo >&2 ERROR: unexpectedly succeeded
+  exit 1
+fi
+diff -u testexpect testoutput
+
+
+rm -f testoutput testexpect
