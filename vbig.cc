@@ -312,7 +312,7 @@ static long long execute(mode_type mode, bool entire, const char *show) {
       if(memcmp(generated, input, bytesRead)) {
         for(size_t n = 0; n < bytesRead; ++n)
           if(generated[n] != input[n])
-            fatal(0, "%s corrupted at %lld/%lld bytes (expected %d got %d)",
+            fatal(0, "%s: corrupted at %lld/%lld bytes (expected %d got %d)",
                     path, size - remain + n, size,
                     (unsigned char)generated[n], (unsigned char)input[n]);
       }
