@@ -215,11 +215,11 @@ int main(int argc, char **argv) {
     if(end == argv[1])
       fatal(0, "invalid size");
     if(!strcmp(end, "K"))
-      size *= 1024;
+      size <<= 10;
     else if(!strcmp(end, "M"))
-      size *= 1024 * 1024;
+      size <<= 20;
     else if(!strcmp(end, "G"))
-      size *= 1024 * 1024 * 1024;
+      size <<= 30;
     else if(*end)
       fatal(0, "invalid size");
   } else if(entireopt) {
