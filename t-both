@@ -1,0 +1,5 @@
+#! /bin/sh
+set -e
+rm -f testfile
+./vbig --both testfile 65536
+rm -f testfile

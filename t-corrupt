@@ -1,0 +1,12 @@
+#! /bin/sh
+set -e
+rm -f testfile
+./vbig --seed chahthaiquiyouto --create testfile 65536
+dd if=/dev/zero of=testfile bs=256 count=1 seek=1 conv=nocreat,notrunc status=none
+if ./vbig --seed chahthaiquiyouto --verify testfile 65536 2>testoutput; then
+  echo >&2 ERROR: verify unexpectedly succeeded
+  exit 1
+fi
+echo 'ERROR: testfile: corrupted at 256/65536 bytes (expected 132 got 0)' > testexpect
+diff -u testexpect testoutput
+rm -f testfile testoutput testexpect

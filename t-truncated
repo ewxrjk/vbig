@@ -1,0 +1,12 @@
+#! /bin/sh
+set -e
+rm -f testfile
+./vbig --seed chahthaiquiyouto --create testfile 65536
+truncate --size=32768 testfile
+if ./vbig --seed chahthaiquiyouto --verify testfile 65536 2>testoutput; then
+  echo >&2 ERROR: verify unexpectedly succeeded
+  exit 1
+fi
+echo 'ERROR: testfile: truncated at 32768/65536 bytes' > testexpect
+diff -u testexpect testoutput
+rm -f testfile testoutput testexpect
