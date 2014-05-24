@@ -1,6 +1,6 @@
 /*
  * This file is part of vbig.
- * Copyright (C) 2011, 2013 Richard Kettlewell
+ * Copyright (C) 2011, 2013, 2014 Richard Kettlewell
  * Copyright (C) 2013 Ian Jackson
  *
  * This program is free software: you can redistribute it and/or modify
