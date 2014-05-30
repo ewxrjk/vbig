@@ -19,7 +19,16 @@
 set -e
 rm -f testoutput testexpect
 
-echo 'ERROR: invalid size: Numerical result out of range' > testexpect
+case $(uname -s) in
+*BSD )
+  ERANGE="Result too large"
+  ;;
+* )
+  ERANGE="Numerical result out of range"
+  ;;
+esac
+
+echo "ERROR: invalid size: ${ERANGE}" > testexpect
 if ./vbig testfile 9223372036854775808 2>testoutput; then
   echo >&2 ERROR: unexpectedly succeeded
   exit 1
