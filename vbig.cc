@@ -149,7 +149,7 @@ int main(int argc, char **argv) {
   mode_type mode = BOTH;
   int n;
   char *ep;
-  while((n = getopt_long(argc, argv, "+s:S:L:vcepfhV", opts, 0)) >= 0) {
+  while((n = getopt_long(argc, argv, "+s:S:L:bvcepfhV", opts, 0)) >= 0) {
     switch(n) {
     case 's': seed = optarg; seedlen = strlen(optarg); break;
     case 'S': seedpath = optarg; break;
