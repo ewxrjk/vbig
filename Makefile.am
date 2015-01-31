@@ -1,6 +1,6 @@
 #
 # This file is part of vbig.
-# Copyright (C) 2011, 2013, 2014 Richard Kettlewell
+# Copyright (C) 2011, 2013, 2014, 2015 Richard Kettlewell
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 bin_PROGRAMS=vbig
-vbig_SOURCES=vbig.cc Arcfour.h Arcfour.cc
+vbig_SOURCES=vbig.cc Rng.h Arcfour.h Arcfour.cc
 man_MANS=vbig.1
 TESTS=t-both t-seeded t-separate t-corrupt t-truncated t-extended t-args
 EXTRA_DIST=${man_MANS} README.md ${TESTS}

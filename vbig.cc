@@ -1,6 +1,6 @@
 /*
  * This file is part of vbig.
- * Copyright (C) 2011, 2013, 2014 Richard Kettlewell
+ * Copyright (C) 2011, 2013, 2014, 2015 Richard Kettlewell
  * Copyright (C) 2013 Ian Jackson
  *
  * This program is free software: you can redistribute it and/or modify
@@ -43,6 +43,7 @@ const struct option opts[] = {
   { "flush", no_argument, 0, 'f' },
   { "entire", no_argument, 0, 'e' },
   { "progress", no_argument, 0, 'p' },
+  { "rng", required_argument, 0,'r' },
   { "help", no_argument, 0, 'h' },
   { "version", no_argument, 0, 'V' },
   { 0, 0, 0, 0 },
@@ -65,6 +66,7 @@ static void help(void) {
          "  --flush, -f       Flush cache\n"
          "  --entire, -e      Write until full; read until EOF\n"
          "  --progress, -p    Show progress as we go\n"
+         "  --rng, -r NAME    Select RNG (ArcFour)\n"
          "  --help, -h        Display usage message\n"
          "  --version, -V     Display version string\n");
 }
@@ -133,7 +135,8 @@ static void scale(int shift, long long &value) {
   value <<= shift;
 }
 
-static long long execute(mode_type mode, bool entire, const char *show);
+static long long execute(mode_type mode, bool entire, const char *show,
+                         Rng *rng);
 
 static const char default_seed[] = "hexapodia as the key insight";
 static void *seed;
@@ -149,6 +152,7 @@ int main(int argc, char **argv) {
   mode_type mode = BOTH;
   int n;
   char *ep;
+  const char *rngname = "arcfour";
   while((n = getopt_long(argc, argv, "+s:S:L:bvcepfhV", opts, 0)) >= 0) {
     switch(n) {
     case 's': seed = optarg; seedlen = strlen(optarg); break;
@@ -163,6 +167,7 @@ int main(int argc, char **argv) {
     case 'e': entireopt = true; break;
     case 'p': progress = true; break;
     case 'f': flush = true; break;
+    case 'r': rngname = optarg; break;
     case 'h': help(); exit(0);
     case 'V': puts(VERSION); exit(0);
     default:
@@ -171,6 +176,11 @@ int main(int argc, char **argv) {
   }
   argc -= optind;
   argv += optind;
+  Rng *rng;
+  if(!strcasecmp(rngname, "arcfour"))
+    rng = new Arcfour();
+  else
+    fatal(0, "unrecognized RNG '%s'", rngname);
   /* expect PATH [SIZE] */
   if(argc > 2)
     fatal(0, "excess arguments");
@@ -243,10 +253,10 @@ int main(int argc, char **argv) {
   }
   const char *show = entireopt ? (mode == CREATE ? "written" : "verified") : 0;
   if(mode == BOTH) {
-    size = execute(CREATE, entireopt, 0);
-    execute(VERIFY, false, show);
+    size = execute(CREATE, entireopt, 0, rng);
+    execute(VERIFY, false, show, rng);
   } else {
-    execute(mode, entireopt, show);
+    execute(mode, entireopt, show, rng);
   }
   return 0;
 }
@@ -286,8 +296,9 @@ static void showprogress(long long amount, const char *show) {
 }
 
 // write/verify the target file
-static long long execute(mode_type mode, bool entire, const char *show) {
-  Arcfour rng((const uint8_t *)seed, seedlen);
+static long long execute(mode_type mode, bool entire, const char *show,
+                         Rng *rng) {
+  rng->seed((const uint8_t *)seed, seedlen);
   FILE *fp = fopen(path, mode == VERIFY ? "rb" : "wb");
   if(!fp)
     fatal(errno, "%s", path);
@@ -299,12 +310,12 @@ static long long execute(mode_type mode, bool entire, const char *show) {
   long long remain = size;
   static const size_t rc4drop = 3072; // en.wikipedia.org/wiki/RC4#Security
   assert(rc4drop <= sizeof(generated));
-  rng.stream(generated, rc4drop);
+  rng->stream(generated, rc4drop);
   while(remain > 0) {
     size_t bytesGenerated = (remain > (ssize_t)sizeof generated
                              ? sizeof generated
                              : remain);
-    rng.stream(generated, bytesGenerated);
+    rng->stream(generated, bytesGenerated);
     if(mode == CREATE) {
       size_t bytesWritten = fwrite(generated, 1, bytesGenerated, fp);
       if(ferror(fp)) {

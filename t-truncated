@@ -1,7 +1,7 @@
 #! /bin/sh
 #
 # This file is part of vbig.
-# Copyright (C) 2014 Richard Kettlewell
+# Copyright (C) 2014, 2015 Richard Kettlewell
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,13 +17,19 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 set -e
-rm -f testfile
-./vbig --seed chahthaiquiyouto --create testfile 65536
-truncate -s 32768 testfile
-if ./vbig --seed chahthaiquiyouto --verify testfile 65536 2>testoutput; then
-  echo >&2 ERROR: verify unexpectedly succeeded
-  exit 1
-fi
-echo 'ERROR: testfile: truncated at 32768/65536 bytes' > testexpect
-diff -u testexpect testoutput
-rm -f testfile testoutput testexpect
+
+check() {
+  rm -f testfile
+  ./vbig --seed chahthaiquiyouto --create "$@" testfile 65536
+  truncate -s 32768 testfile
+  if ./vbig --seed chahthaiquiyouto --verify "$@" testfile 65536 2>testoutput; then
+    echo >&2 ERROR: verify unexpectedly succeeded
+    exit 1
+  fi
+  echo 'ERROR: testfile: truncated at 32768/65536 bytes' > testexpect
+  diff -u testexpect testoutput
+  rm -f testfile testoutput testexpect
+}
+
+check
+check --rng arcfour

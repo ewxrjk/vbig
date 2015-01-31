@@ -40,7 +40,7 @@ void Arcfour::stream(uint8_t *outbuf, size_t length) {
   idx_j = j;
 }
 
-Arcfour::Arcfour(const uint8_t *key, size_t keylen) {
+void Arcfour::seed(const uint8_t *key, size_t keylen) {
   size_t i, j, k;
   idx_i = idx_j = 0;
   for (i = 0; i < ARCFOUR_SBOX_SIZE; i++)

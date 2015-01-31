@@ -20,7 +20,7 @@ In any case:
 Author
 ------
 
-Copyright (C) 2011, 2013, 2014 Richard Kettlewell
+Copyright (C) 2011, 2013-2015 Richard Kettlewell
 
 Copyright (C) 2013 Ian Jackson
 

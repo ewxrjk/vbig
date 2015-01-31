@@ -24,16 +24,15 @@
 #ifndef ARCFOUR_H
 # define ARCFOUR_H
 
-# include <stddef.h>
-# include <stdint.h>
+#include "Rng.h"
 
 #define ARCFOUR_SBOX_SIZE 256
 
-class Arcfour {
+class Arcfour: public Rng {
   uint8_t sbox[ARCFOUR_SBOX_SIZE];
   uint8_t idx_i, idx_j;
 public:
-  Arcfour(const uint8_t *key, size_t keylen);
+  void seed(const uint8_t *key, size_t keylen);
   void stream(uint8_t *outbuf, size_t length);
 };
 
