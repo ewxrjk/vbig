@@ -19,6 +19,8 @@
 set -e
 
 check() {
+  e="$1"
+  shift
   rm -f testfile
   ./vbig --seed chahthaiquiyouto --create "$@" testfile 65536
   dd if=/dev/zero of=testfile bs=256 count=1 seek=1 conv=notrunc
@@ -26,10 +28,13 @@ check() {
     echo >&2 ERROR: verify unexpectedly succeeded
     exit 1
   fi
-  echo 'ERROR: testfile: corrupted at 256/65536 bytes (expected 132 got 0)' > testexpect
+  echo "ERROR: testfile: corrupted at 256/65536 bytes (expected $e got 0)" > testexpect
   diff -u testexpect testoutput
   rm -f testfile testoutput testexpect
 }
 
-check
-check --rng arcfour
+check 132
+check 132 --rng arcfour
+check 228 --rng aes-ctr-drbg-128
+check 26 --rng aes-ctr-drbg-192
+check 71 --rng aes-ctr-drbg-256

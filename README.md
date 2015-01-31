@@ -17,6 +17,9 @@ In any case:
     make
     sudo make install
 
+You will need the Nettle library of cryptographic primitives:
+  http://www.lysator.liu.se/~nisse/nettle/
+
 Author
 ------
 

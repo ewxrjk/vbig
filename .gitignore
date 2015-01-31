@@ -11,11 +11,15 @@ config.h.in
 config.log
 config.status
 configure
+drbgtest
 stamp-h1
 t-arcfour
+t-aes-ctr-drbg
 vbig
 *~
 debian/files
 debian/*substvars
 *.trs
 *.log
+*.zip
+*.tar.gz

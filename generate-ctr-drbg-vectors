@@ -1,0 +1,73 @@
+#! /usr/bin/perl -w
+use strict;
+
+our $n = 0;
+
+sub h {
+    my $name = shift;
+    my $value = shift;
+    ++$n;
+    print "    static const uint8_t ${name}_${n}[] = { ";
+    print join(", ", map("0x$_", ($value =~ /../g)));
+    print "};\n";
+    return "${name}_${n}";
+};
+
+our $v;
+our %u = ();
+while(<>) {
+    s/\r//;
+    if(/^# *(.*)/) {
+        print "  /* $1 */\n";
+    }
+    if(/\[AES-(\d+) no df\]/) {
+        $v->{bits} = $1;
+        next;
+    } elsif(/\[AES|\[3Key/) {
+        undef $v;
+        next;
+    }
+    next unless defined $v;
+    if(/\[(\S+) = (\S+)\]/) {
+        $v->{$1} = $2 if defined $v;
+        next;
+    }
+    if(/(\S+) = (\S+)/) {
+        $u{$1} = $2;
+        if($1 eq 'ReturnedBits') {
+            if(0) {
+                print "  /* ";
+                print join(" ", map("$_=$v->{$_}", sort keys %$v));
+                print "*/\n";
+                print "  /* ";
+                print join(" ", map("$_=$u{$_}", sort keys %u));
+                print "*/\n";
+            }
+            if(!exists $u{'AdditionalInput'}) {
+                printf "  /* %s:%d */\n", $ARGV, $.;
+                print "  {\n";
+                my $entropy = h('entropy', $u{'EntropyInput'});
+                my $returned = h('returned', $u{'ReturnedBits'});
+                my $bits = $v->{bits};
+                printf "    uint8_t buffer\[%d];\n",$v->{ReturnedBitsLen} / 8;
+                print "    AesCtrDrbg$bits rng;\n";
+                if(exists $u{'PersonalizationString'}) {
+                    my $personalization = h('personalization',
+                                            $u{'PersonalizationString'});
+                    printf "    rng.instantiate($entropy, $personalization, %d);\n",
+                    length($u{'PersonalizationString'}) / 2;
+                } else {
+                    print "    rng.instantiate($entropy, NULL, 0);\n";
+                }
+                printf "    rng.stream(buffer, %d);\n",
+                    $v->{ReturnedBitsLen} / 8;
+                printf "    rng.stream(buffer, %d);\n",
+                    $v->{ReturnedBitsLen} / 8;
+                printf "    assert(!memcmp(buffer, $returned, %d));\n",
+                    $v->{ReturnedBitsLen} / 8;
+                print "  }\n";
+            }
+            %u = ();
+        }
+    }
+}

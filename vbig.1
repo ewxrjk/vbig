@@ -1,6 +1,6 @@
 \"
 \" This file is part of vbig.
-\" Copyright (C) 2011, 2013, 2014 Richard Kettlewell
+\" Copyright (C) 2011, 2013-2015 Richard Kettlewell
 \" Copyright (C) 2013 Ian Jackson
 \"
 \" This program is free software: you can redistribute it and/or modify
@@ -96,6 +96,29 @@ When writing, keep going until the device is full (No space left
 on device).  When reading, keep going until the end of the file
 or device.  \fISIZE\fR should not be specified.  The actual size
 written or verified will be printed to stdout.
+.TP
+.B --rng\fR, \fB-r \fIRNG
+Selects the PRNG to use.
+The options are:
+.RS
+.TP
+.B arcfour
+RC4 is keyed with the seed and used to produce a stream of bytes.
+The first 3072 bytes are dropped.
+This is the default.
+.TP
+.B aes-ctr-drbg-128
+CTR_DRBG with the AES-128 block cipher.
+The entropy input is 0 and the seed is used as the personalization string.
+.TP
+.B aes-ctr-drbg-192
+CTR_DRBG with the AES-192 block cipher.
+The entropy input is 0 and the seed is used as the personalization string.
+.TP
+.B aes-ctr-drbg-256
+CTR_DRBG with the AES-256 block cipher.
+The entropy input is 0 and the seed is used as the personalization string.
+.RE
 .TP
 .B --help\fR, \fB-h
 Displays a usage message.

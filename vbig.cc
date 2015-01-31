@@ -29,6 +29,7 @@
 #include <assert.h>
 #include <sys/stat.h>
 #include "Arcfour.h"
+#include "CtrDrbg.h"
 
 #define DEFAULT_SEED_LENGTH 2048;
 
@@ -66,7 +67,7 @@ static void help(void) {
          "  --flush, -f       Flush cache\n"
          "  --entire, -e      Write until full; read until EOF\n"
          "  --progress, -p    Show progress as we go\n"
-         "  --rng, -r NAME    Select RNG (ArcFour)\n"
+         "  --rng, -r NAME    Select RNG (arcfour, or aes-ctr-drbg-128/192/256)\n"
          "  --help, -h        Display usage message\n"
          "  --version, -V     Display version string\n");
 }
@@ -179,6 +180,12 @@ int main(int argc, char **argv) {
   Rng *rng;
   if(!strcasecmp(rngname, "arcfour"))
     rng = new Arcfour();
+  else if(!strcasecmp(rngname, "aes-ctr-drbg-128"))
+    rng = new AesCtrDrbg128();
+  else if(!strcasecmp(rngname, "aes-ctr-drbg-192"))
+    rng = new AesCtrDrbg192();
+  else if(!strcasecmp(rngname, "aes-ctr-drbg-256"))
+    rng = new AesCtrDrbg256();
   else
     fatal(0, "unrecognized RNG '%s'", rngname);
   /* expect PATH [SIZE] */

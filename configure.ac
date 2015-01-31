@@ -1,6 +1,6 @@
 #
 # This file is part of vbig.
-# Copyright (C) 2011, 2013 Richard Kettlewell
+# Copyright (C) 2011, 2013, 2015 Richard Kettlewell
 # Copyright (C) 2013 Ian Jackson
 #
 # This program is free software: you can redistribute it and/or modify
@@ -36,8 +36,12 @@ case "$host" in
 esac
 AC_LANG([C++])
 AC_PROG_CXX
+PKG_CHECK_MODULES([NETTLE],[nettle])
 AC_PROG_RANLIB
 AC_SET_MAKE
+if test "$NETTLE_LIBS" = ""; then
+  AC_MSG_ERROR([nettle is required])
+fi
 AC_DEFINE([_GNU_SOURCE], [1], [use GNU extensions])
 if test "x$GXX" = xyes; then
   CXX="$CXX -Wall -W -Werror -Wpointer-arith -Wwrite-strings"

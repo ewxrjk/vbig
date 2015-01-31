@@ -27,3 +27,6 @@ check() {
 
 check
 check --rng arcfour
+check --rng aes-ctr-drbg-128
+check --rng aes-ctr-drbg-192
+check --rng aes-ctr-drbg-256
