@@ -16,7 +16,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 bin_PROGRAMS=vbig
+noinst_PROGRAMS=t-arcfour
 vbig_SOURCES=vbig.cc Rng.h Arcfour.h Arcfour.cc
+t_arcfour_SOURCES=t-arcfour.cc Arcfour.cc
 man_MANS=vbig.1
-TESTS=t-both t-seeded t-separate t-corrupt t-truncated t-extended t-args
+TESTS=t-arcfour t-both t-seeded t-separate t-corrupt t-truncated t-extended t-args
 EXTRA_DIST=${man_MANS} README.md ${TESTS}

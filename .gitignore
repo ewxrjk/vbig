@@ -12,6 +12,7 @@ config.log
 config.status
 configure
 stamp-h1
+t-arcfour
 vbig
 *~
 debian/files

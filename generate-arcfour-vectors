@@ -1,0 +1,52 @@
+#! /usr/bin/perl -w
+#
+# This file is part of vbig.
+# Copyright (C) 2015 Richard Kettlewell
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+use strict;
+
+our $n = 0;
+our $offset = 0;
+
+while(<>) {
+    if(/key:\s*0x(.*)/) {
+        ++$n;
+        my $key=$1;
+        print "\n";
+        print "  static const uint8_t k$n\[] = { ";
+        print join(", ", map("0x$_", ($key =~ /../g)));
+        print " };\n";
+
+        printf "  a.seed(k$n, %d);\n", length($key)/2;
+        $offset = 0;
+    }
+    if(/DEC +(\d+) +HEX +.*:(.*)/) {
+        ++$n;
+        my $target = $1;
+        my $ds = $2;
+        $ds =~ s/ //g;
+        if($offset < $target) {
+            printf "  a.stream(buffer, %d);\n", $target - $offset;
+            $offset = $target;
+        }
+        print "  static const uint8_t d${n}[] = {";
+        print join(", ", map("0x$_", ($ds =~ /../g)));
+        print "};\n";
+        printf "  a.stream(buffer, %d);\n", length($ds)/2;
+        printf "  assert(!memcmp(buffer, d${n}, %d));\n", length($ds)/2;
+        $offset += length($ds)/2;
+    }
+}
