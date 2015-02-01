@@ -23,6 +23,7 @@ t_arcfour_SOURCES=t-arcfour.cc Arcfour.cc
 t_arcfour_LDADD=${NETTLE_LIBS}
 t_aes_ctr_drbg_SOURCES=t-aes-ctr-drbg.cc CtrDrbg.cc
 t_aes_ctr_drbg_LDADD=${NETTLE_LIBS}
+AM_CXXFLAGS=${NETTLE_CFLAGS}
 man_MANS=vbig.1
 TESTS=t-arcfour t-aes-ctr-drbg t-both t-seeded t-separate t-corrupt t-truncated t-extended t-args
 EXTRA_DIST=${man_MANS} README.md ${TESTS}
