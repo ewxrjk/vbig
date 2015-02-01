@@ -28,13 +28,18 @@ check() {
     echo >&2 ERROR: verify unexpectedly succeeded
     exit 1
   fi
-  echo "ERROR: testfile: corrupted at 256/65536 bytes (expected $e got 0)" > testexpect
+  rm -f testexpect
+  if [ "$2" = "arcfour" ]; then
+    echo 'WARNING: arcfour algorithm is insecure' > testexpect
+  fi
+  echo "ERROR: testfile: corrupted at 256/65536 bytes (expected $e got 0)" >> testexpect
   diff -u testexpect testoutput
   rm -f testfile testoutput testexpect
 }
 
 check 132
-check 132 --rng arcfour
+check 87 --rng arcfour
+check 132 --rng arcfour-drop-3072
 check 228 --rng aes-ctr-drbg-128
 check 26 --rng aes-ctr-drbg-192
 check 71 --rng aes-ctr-drbg-256

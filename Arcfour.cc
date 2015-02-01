@@ -41,10 +41,6 @@ void Arcfour::stream(uint8_t *outbuf, size_t length) {
 }
 
 void Arcfour::seed(const uint8_t *key, size_t keylen) {
-  seed(key, keylen, true);
-}
-
-void Arcfour::seed(const uint8_t *key, size_t keylen, bool drop) {
   size_t i, j, k;
   idx_i = idx_j = 0;
   for (i = 0; i < ARCFOUR_SBOX_SIZE; i++)
@@ -58,8 +54,10 @@ void Arcfour::seed(const uint8_t *key, size_t keylen, bool drop) {
     if (++k == keylen)
       k = 0;
   }
-  if(drop) {
-    uint8_t dropped[3072];        // en.wikipedia.org/wiki/RC4#Security
-    stream(dropped, sizeof dropped);
-  }
+}
+
+void ArcfourDrop3072::seed(const uint8_t *key, size_t keylen) {
+  Arcfour::seed(key, keylen);
+  uint8_t dropped[3072];        // en.wikipedia.org/wiki/RC4#Security
+  stream(dropped, sizeof dropped);
 }

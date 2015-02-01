@@ -26,13 +26,18 @@ check() {
     echo >&2 ERROR: verify unexpectedly succeeded
     exit 1
   fi
-  echo 'ERROR: testfile: truncated at 32768/65536 bytes' > testexpect
+  rm -f testexpect
+  if [ "$2" = "arcfour" ]; then
+    echo 'WARNING: arcfour algorithm is insecure' > testexpect
+  fi
+  echo 'ERROR: testfile: truncated at 32768/65536 bytes' >> testexpect
   diff -u testexpect testoutput
   rm -f testfile testoutput testexpect
 }
 
 check
 check --rng arcfour
+check --rng arcfour-drop-3072
 check --rng aes-ctr-drbg-128
 check --rng aes-ctr-drbg-192
 check --rng aes-ctr-drbg-256

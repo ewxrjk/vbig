@@ -30,7 +30,7 @@ while(<>) {
         print join(", ", map("0x$_", ($key =~ /../g)));
         print " };\n";
 
-        printf "  a.seed(k$n, %d, false);\n", length($key)/2;
+        printf "  a.seed(k$n, %d);\n", length($key)/2;
         $offset = 0;
     }
     if(/DEC +(\d+) +HEX +.*:(.*)/) {

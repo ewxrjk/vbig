@@ -153,7 +153,7 @@ int main(int argc, char **argv) {
   mode_type mode = BOTH;
   int n;
   char *ep;
-  const char *rngname = "arcfour";
+  const char *rngname = "arcfour-drop-3072";
   while((n = getopt_long(argc, argv, "+s:S:L:bvcepfhV", opts, 0)) >= 0) {
     switch(n) {
     case 's': seed = optarg; seedlen = strlen(optarg); break;
@@ -178,8 +178,11 @@ int main(int argc, char **argv) {
   argc -= optind;
   argv += optind;
   Rng *rng;
-  if(!strcasecmp(rngname, "arcfour"))
+  if(!strcasecmp(rngname, "arcfour")) {
+    fprintf(stderr, "WARNING: arcfour algorithm is insecure\n");
     rng = new Arcfour();
+  } else if(!strcasecmp(rngname, "arcfour-drop-3072"))
+    rng = new ArcfourDrop3072();
   else if(!strcasecmp(rngname, "aes-ctr-drbg-128"))
     rng = new AesCtrDrbg128();
   else if(!strcasecmp(rngname, "aes-ctr-drbg-192"))

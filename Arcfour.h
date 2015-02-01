@@ -32,9 +32,13 @@ class Arcfour: public Rng {
   uint8_t sbox[ARCFOUR_SBOX_SIZE];
   uint8_t idx_i, idx_j;
 public:
-  void seed(const uint8_t *key, size_t keylen, bool drop);
-  void seed(const uint8_t *key, size_t keylen);
+  virtual void seed(const uint8_t *key, size_t keylen);
   void stream(uint8_t *outbuf, size_t length);
+};
+
+class ArcfourDrop3072: public Arcfour {
+public:
+  void seed(const uint8_t *key, size_t keylen);
 };
 
 #endif /* ARCFOUR_H */
