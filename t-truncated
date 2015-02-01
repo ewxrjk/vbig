@@ -21,7 +21,7 @@ set -e
 check() {
   rm -f testfile.$$
   ${VBIG:-./vbig} --seed chahthaiquiyouto --create "$@" testfile.$$ 65536
-  dd if=/dev/null of=testfile.$$ bs=32768 oseek=1
+  dd if=/dev/null of=testfile.$$ bs=32768 seek=1
   if ${VBIG:-./vbig} --seed chahthaiquiyouto --verify "$@" testfile.$$ 65536 2>testoutput.$$; then
     echo >&2 ERROR: verify unexpectedly succeeded
     exit 1
