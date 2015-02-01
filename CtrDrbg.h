@@ -36,6 +36,7 @@ private:
 
   virtual void setkey(const uint8_t *key) = 0;
   virtual void encrypt(const uint8_t *input, uint8_t *output) = 0;
+  static void incr(uint8_t *v, size_t vlen);
 protected:
   void generate(size_t outlen, size_t keylen,
                 uint8_t *outbuf, size_t length);

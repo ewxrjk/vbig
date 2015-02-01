@@ -20,12 +20,32 @@
 #include <cstring>
 #include <algorithm>
 
-static void incr(uint8_t *v, size_t vlen) {
+void CtrDrbg::incr(uint8_t *v, size_t vlen) {
+#if __GNUC__ && __amd64__
+  if(__builtin_expect(vlen == 16, 1)) {
+    __asm__("mov 8(%0),%%rcx\n\t"
+            "mov (%0),%%rax\n\t"
+            "bswap %%rcx\n\t"
+            "bswap %%rax\n\t"
+            "add $1,%%rcx\n\t"
+            "adc $0,%%rax\n\t"
+            "bswap %%rcx\n\t"
+            "bswap %%rax\n\t"
+            "mov %%rcx,8(%0)\n\t"
+            "mov %%rax,(%0)"
+            :
+            : "r"(v)
+            : "rax", "rcx", "cc");
+    return;
+  }
+#endif
+  v += vlen;
   int carry = 1;
-  for(int n = vlen - 1; n >= 0; --n) {
-    int i = v[n] + carry;
-    v[n] = i;
+  while(vlen > 0) {
+    int i = *--v + carry;
+    *v = i;
     carry = i >> 8;
+    vlen--;
   }
 }
 
