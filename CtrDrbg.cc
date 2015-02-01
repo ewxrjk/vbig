@@ -39,6 +39,34 @@ void CtrDrbg::incr(uint8_t *v, size_t vlen) {
     return;
   }
 #endif
+#if __GNUC__ && __i386__
+  if(__builtin_expect(vlen == 16, 1)) {
+    __asm__("mov 12(%0),%%edx\n\t"
+            "mov 8(%0),%%ecx\n\t"
+            "mov 4(%0),%%ebx\n\t"
+            "mov (%0),%%eax\n\t"
+            "bswap %%edx\n\t"
+            "bswap %%ecx\n\t"
+            "bswap %%ebx\n\t"
+            "bswap %%eax\n\t"
+            "add $1,%%edx\n\t"
+            "adc $0,%%ecx\n\t"
+            "adc $0,%%ebx\n\t"
+            "adc $0,%%eax\n\t"
+            "bswap %%edx\n\t"
+            "bswap %%ecx\n\t"
+            "bswap %%ebx\n\t"
+            "bswap %%eax\n\t"
+            "mov %%edx,12(%0)\n\t"
+            "mov %%ecx,8(%0)\n\t"
+            "mov %%ebx,4(%0)\n\t"
+            "mov %%eax,(%0)"
+            :
+            : "r"(v)
+            : "eax", "ebx", "ecx", "edx", "cc");
+    return;
+  }
+#endif
   v += vlen;
   int carry = 1;
   while(vlen > 0) {
