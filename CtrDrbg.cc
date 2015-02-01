@@ -67,6 +67,34 @@ void CtrDrbg::incr(uint8_t *v, size_t vlen) {
     return;
   }
 #endif
+#if __GNUC__ && (__ARM_ARCH_6__ || __ARM_ARCH_7__)
+  if(__builtin_expect(vlen == 16, 1)) {
+    __asm__("ldr r4,[%0,#12]\n\t"
+            "ldr r3,[%0,#8]\n\t"
+            "ldr r2,[%0,#4]\n\t"
+            "ldr r1,[%0]\n\t"
+            "rev r4,r4\n\t"
+            "rev r3,r3\n\t"
+            "rev r2,r2\n\t"
+            "rev r1,r1\n\t"
+            "adds r4,r4,#1\n\t"
+            "adcs r3,r3,#0\n\t"
+            "adcs r2,r2,#0\n\t"
+            "adc r1,r1,#0\n\t"
+            "rev r4,r4\n\t"
+            "rev r3,r3\n\t"
+            "rev r2,r2\n\t"
+            "rev r1,r1\n\t"
+            "str r4,[%0,#12]\n\t"
+            "str r3,[%0,#8]\n\t"
+            "str r2,[%0,#4]\n\t"
+            "str r1,[%0]\n\t"
+            :
+            : "r"(v)
+            : "r1", "r2", "r3", "r4", "cc");
+    return;
+  }
+#endif
   v += vlen;
   int carry = 1;
   while(vlen > 0) {
