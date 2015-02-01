@@ -19,20 +19,20 @@
 set -e
 
 check() {
-  rm -f testfile
-  ${VBIG:-./vbig} --seed chahthaiquiyouto --create "$@" testfile 65536
-  dd if=/dev/zero bs=256 count=1 seek=1 conv=notrunc >> testfile
-  if ${VBIG:-./vbig} --seed chahthaiquiyouto --verify "$@" testfile 65536 2>testoutput; then
+  rm -f testfile.$$
+  ${VBIG:-./vbig} --seed chahthaiquiyouto --create "$@" testfile.$$ 65536
+  dd if=/dev/zero bs=256 count=1 seek=1 conv=notrunc >> testfile.$$
+  if ${VBIG:-./vbig} --seed chahthaiquiyouto --verify "$@" testfile.$$ 65536 2>testoutput.$$; then
     echo >&2 ERROR: verify unexpectedly succeeded
     exit 1
   fi
-  rm -f testexpect
+  rm -f testexpect.$$
   if [ "$2" = "arcfour" ]; then
-    echo 'WARNING: arcfour algorithm is insecure' > testexpect
+    echo 'WARNING: arcfour algorithm is insecure' > testexpect.$$
   fi
-  echo 'ERROR: testfile: extended beyond 65536 bytes' >> testexpect
-  diff -u testexpect testoutput
-  rm -f testfile testoutput testexpect
+  echo "ERROR: testfile.$$: extended beyond 65536 bytes" >> testexpect.$$
+  diff -u testexpect.$$ testoutput.$$
+  rm -f testfile.$$ testoutput.$$ testexpect.$$
 }
 
 check
