@@ -19,7 +19,7 @@
 set -e
 check() {
   rm -f testfile
-  ./vbig --both "$@" testfile 65536
+  ${VBIG:-./vbig} --both "$@" testfile 65536
   rm -f testfile
 }
 

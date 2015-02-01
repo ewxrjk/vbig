@@ -20,8 +20,8 @@ set -e
 
 check() {
   rm -f testfile
-  ./vbig --seed chahthaiquiyouto --create "$@" testfile 65536
-  ./vbig --seed chahthaiquiyouto --verify "$@" testfile 65536
+  ${VBIG:-./vbig} --seed chahthaiquiyouto --create "$@" testfile 65536
+  ${VBIG:-./vbig} --seed chahthaiquiyouto --verify "$@" testfile 65536
   rm -f testfile
 }
 

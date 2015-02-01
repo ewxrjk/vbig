@@ -20,8 +20,8 @@ set -e
 
 check() {
   rm -f testfile
-  ./vbig --create "$@" testfile 65536
-  ./vbig --verify "$@" testfile 65536
+  ${VBIG:-./vbig} --create "$@" testfile 65536
+  ${VBIG:-./vbig} --verify "$@" testfile 65536
   rm -f testfile
 }
 
