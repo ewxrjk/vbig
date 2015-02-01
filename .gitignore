@@ -1,5 +1,9 @@
 .deps
 *.o
+GPATH
+GRTAGS
+GSYMS
+GTAGS
 INSTALL
 Makefile
 Makefile.in
