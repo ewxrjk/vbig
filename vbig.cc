@@ -31,7 +31,7 @@
 #include "Arcfour.h"
 #include "CtrDrbg.h"
 
-#define DEFAULT_SEED_LENGTH 2048;
+#define DEFAULT_SEED_LENGTH 256
 
 // Command line options
 const struct option opts[] = {
