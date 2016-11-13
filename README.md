@@ -14,7 +14,7 @@ If you got it from git:
 In any case:
 
     ./configure
-    make
+    make check
     sudo make install
 
 You will need the Nettle library of cryptographic primitives:
@@ -23,7 +23,7 @@ You will need the Nettle library of cryptographic primitives:
 Author
 ------
 
-Copyright (C) 2011, 2013-2015 Richard Kettlewell
+Copyright (C) 2011, 2013-2016 Richard Kettlewell
 
 Copyright (C) 2013 Ian Jackson
 

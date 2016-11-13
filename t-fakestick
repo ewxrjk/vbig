@@ -1,0 +1,39 @@
+#! /bin/sh
+#
+# This file is part of vbig.
+# Copyright (C) 2016 Richard Kettlewell
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+set -e
+
+if ! [ -e .libs/fakestick.so ]; then
+    echo >&2 "WARNING: fakestick shared library not built, skipping"
+    exit 77
+fi
+
+if ! [ -w / ]; then
+    echo >&2 "WARNING: test only works as root, skipping"
+    exit 77
+fi
+
+modprobe nbd
+
+trap "rm -rf $$.img" EXIT INT HUP TERM
+
+nbdkit --unix - \
+       --new-style \
+       --foreground \
+       --run "${srcdir:-.}/t-fakestick-captive \$nbd" \
+       .libs/fakestick.so path=$$.img

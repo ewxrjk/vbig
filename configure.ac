@@ -1,6 +1,6 @@
 #
 # This file is part of vbig.
-# Copyright (C) 2011, 2013, 2015 Richard Kettlewell
+# Copyright (C) 2011, 2013, 2015, 2016 Richard Kettlewell
 # Copyright (C) 2013 Ian Jackson
 #
 # This program is free software: you can redistribute it and/or modify
@@ -19,12 +19,15 @@
 AC_PREREQ([2.61])
 AC_INIT([vbig], [0.3], [rjk@greenend.org.uk])
 m4_include([m4/ax_random_device.m4])
+AC_CONFIG_MACRO_DIRS([m4])
 AC_CONFIG_AUX_DIR([config.aux])
 AM_INIT_AUTOMAKE([foreign])
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES])
 AC_CONFIG_SRCDIR([vbig.cc])
 AM_CONFIG_HEADER([config.h])
 AC_CANONICAL_HOST
+AC_PROG_LIBTOOL
+AC_ENABLE_SHARED
 case "$host" in
 *-*-darwin* )
   AC_DEFINE([PURGE_COMMAND],["purge"], [Command to purge filesystem cache])
@@ -36,8 +39,9 @@ case "$host" in
 esac
 AC_LANG([C++])
 AC_PROG_CXX
+AC_CHECK_HEADER([nbdkit-plugin.h],[want_fakestick=true],[want_fakestick=false])
+AM_CONDITIONAL([WANT_FAKESTICK],[${want_fakestick}])
 PKG_CHECK_MODULES([NETTLE],[nettle])
-AC_PROG_RANLIB
 AC_SET_MAKE
 if test "$NETTLE_LIBS" = ""; then
   AC_MSG_ERROR([nettle is required])

@@ -1,5 +1,8 @@
 .deps
+.libs
 *.o
+*.lo
+*.la
 GPATH
 GRTAGS
 GSYMS
@@ -16,6 +19,8 @@ config.log
 config.status
 configure
 drbgtest
+libtool
+m4
 stamp-h1
 t-arcfour
 t-aes-ctr-drbg
