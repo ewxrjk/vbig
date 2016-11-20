@@ -55,7 +55,7 @@ static void help(void) {
   printf("vbig - create or verify a large but pseudo-random file\n"
          "\n"
          "Usage:\n"
-         "  vbig [OPTIONS] [--both|--verify|--create] PATH] [SIZE]\n"
+         "  vbig [OPTIONS] [--both|--verify|--create] PATH [SIZE]\n"
          "\n"
          "Options:\n"
          "  --seed, -s        Specify random seed as string\n"
