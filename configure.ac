@@ -28,6 +28,7 @@ AM_CONFIG_HEADER([config.h])
 AC_CANONICAL_HOST
 AC_PROG_LIBTOOL
 AC_ENABLE_SHARED
+AC_DISABLE_STATIC
 case "$host" in
 *-*-darwin* )
   AC_DEFINE([PURGE_COMMAND],["purge"], [Command to purge filesystem cache])

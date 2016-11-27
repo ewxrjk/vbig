@@ -17,7 +17,7 @@
 #
 bin_PROGRAMS=vbig
 if WANT_FAKESTICK
-  lib_LTLIBRARIES=fakestick.la
+  noinst_LTLIBRARIES=fakestick.la
 endif
 noinst_PROGRAMS=t-arcfour t-aes-ctr-drbg
 vbig_SOURCES=vbig.cc Rng.h Arcfour.h Arcfour.cc CtrDrbg.h CtrDrbg.cc
@@ -27,7 +27,7 @@ t_arcfour_LDADD=${NETTLE_LIBS}
 t_aes_ctr_drbg_SOURCES=t-aes-ctr-drbg.cc CtrDrbg.cc
 t_aes_ctr_drbg_LDADD=${NETTLE_LIBS}
 fakestick_la_SOURCES=fakestick.c
-fakestick_la_LDFLAGS=-module -shared -avoid-version
+fakestick_la_LDFLAGS=-module -shared -avoid-version -rpath $(shell pwd)
 AM_CXXFLAGS=${NETTLE_CFLAGS}
 man_MANS=vbig.1
 TESTS=t-arcfour t-aes-ctr-drbg t-both t-seeded t-separate t-corrupt t-truncated t-extended t-args t-fakestick
