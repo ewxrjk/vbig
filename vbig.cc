@@ -269,6 +269,7 @@ int main(int argc, char **argv) {
   } else {
     execute(mode, entireopt, show, rng);
   }
+  delete rng; /* placate memory leak checkers */
   return 0;
 }
 
