@@ -28,6 +28,7 @@ vbig
 *~
 debian/files
 debian/*substvars
+debian/debhelper-build-stamp
 *.trs
 *.log
 *.zip
