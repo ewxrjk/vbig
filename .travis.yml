@@ -1,15 +1,29 @@
+os:
+- linux
+- osx
+
 dist: trusty
-sudo: required
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - nettle-dev
 language: cpp
 compiler:
 - clang
 - gcc
 
-before_install:
-- sudo apt-get update -qq
-- sudo apt-get install -qq nettle-dev
 #- sudo apt-get install -qq nbdkit-plugin-dev
 # Not in any of the ancient platforms Travis offers
+
+matrix:
+  exclude:
+  - os: osx
+    compiler: gcc
+
+install:
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install nettle; fi
 
 script:
 - autoreconf -is
