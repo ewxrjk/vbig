@@ -22,7 +22,7 @@ m4_include([m4/ax_random_device.m4])
 AC_CONFIG_MACRO_DIRS([m4])
 AC_CONFIG_AUX_DIR([config.aux])
 AM_INIT_AUTOMAKE([foreign])
-m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES])
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 AC_CONFIG_SRCDIR([vbig.cc])
 AM_CONFIG_HEADER([config.h])
 AC_CANONICAL_HOST
