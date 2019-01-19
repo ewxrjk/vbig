@@ -223,7 +223,7 @@ int main(int argc, char **argv) {
       seedlen = DEFAULT_SEED_LENGTH;
     FILE *seedfile = fopen(seedpath, "rb");
     if(!seedfile)
-      fatal(errno, "%s", seedpath);
+      fatal(errno, "open %s", seedpath);
     seed = malloc(seedlen);
     if(!seed)
       fatal(errno, "allocate seed");
@@ -313,7 +313,7 @@ static long long execute(mode_type mode, bool entire, const char *show,
   rng->seed((const uint8_t *)seed, seedlen);
   FILE *fp = fopen(path, mode == VERIFY ? "rb" : "wb");
   if(!fp)
-    fatal(errno, "%s", path);
+    fatal(errno, "open %s", path);
   if(mode == VERIFY && flush)
     flushCache(fp);
   if(mode == CREATE && entire)
@@ -329,7 +329,7 @@ static long long execute(mode_type mode, bool entire, const char *show,
       size_t bytesWritten = fwrite(generated, 1, bytesGenerated, fp);
       if(ferror(fp)) {
 	if(!entire || errno != ENOSPC)
-	  fatal(errno, "%s", path);
+	  fatal(errno, "write %s", path);
 	remain -= bytesWritten;
 	break;
       }
@@ -337,7 +337,7 @@ static long long execute(mode_type mode, bool entire, const char *show,
     } else {
       size_t bytesRead = fread(input, 1, bytesGenerated, fp);
       if(ferror(fp))
-        fatal(errno, "%s", path);
+        fatal(errno, "read %s", path);
       if(memcmp(generated, input, bytesRead)) {
         for(size_t n = 0; n < bytesRead; ++n)
           if(generated[n] != input[n])
@@ -365,11 +365,11 @@ static long long execute(mode_type mode, bool entire, const char *show,
             path, size);
   if(mode == CREATE && flush) {
     if(fflush(fp) < 0)
-      fatal(errno, "%s", path);
+      fatal(errno, "flush %s", path);
     flushCache(fp);
   }
   if(fclose(fp) < 0)
-    fatal(errno, "%s", path);
+    fatal(errno, "close %s", path);
   /* Actual size written/verified */
   long long done = size - remain;
   if(show) {
