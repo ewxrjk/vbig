@@ -23,7 +23,7 @@ matrix:
     compiler: gcc
 
 install:
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install nettle; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" && ! -d /usr/local/Cellar/nettle ]]; then brew install nettle; fi
 
 script:
 - autoreconf -is
