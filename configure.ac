@@ -43,6 +43,7 @@ AC_PROG_CXX
 AC_CHECK_HEADER([nbdkit-plugin.h],[want_fakestick=true],[want_fakestick=false])
 AM_CONDITIONAL([WANT_FAKESTICK],[${want_fakestick}])
 PKG_CHECK_MODULES([NETTLE],[nettle])
+PKG_CHECK_MODULES([JSONCPP],[jsoncpp],[],[true])
 AC_SET_MAKE
 if test "$NETTLE_LIBS" = ""; then
   AC_MSG_ERROR([nettle is required])

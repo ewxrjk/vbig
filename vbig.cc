@@ -84,7 +84,7 @@ enum mode_type {
 static void clearprogress();
 
 // Report an error and exit
-static void __attribute__((noreturn))
+void __attribute__((noreturn))
 fatal(int errno_value, const char *fmt, ...) {
   va_list ap;
   clearprogress();

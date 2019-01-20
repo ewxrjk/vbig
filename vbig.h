@@ -22,5 +22,7 @@
 #include <string>
 
 bool safe_path(const std::string &path);
+void __attribute__((noreturn))
+fatal(int errno_value, const char *fmt, ...);
 
 #endif /* VBIG_H */

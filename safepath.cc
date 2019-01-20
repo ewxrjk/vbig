@@ -17,8 +17,107 @@
  */
 #include "vbig.h"
 #include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include <cstdio>
+#include <unistd.h>
+#include <sstream>
+#if __linux__
+#include <json/json.h>
+#endif
 
+// Run a subprocess and capture its stdout
+static void capture(std::string &output, const char *file, const char **args) {
+  int p[2];
+  pid_t pid;
+  if(pipe(p) < 0)
+    fatal(errno, "create pipe");
+  switch(pid = fork()) {
+  case 0:
+    if(dup2(p[1], 1) < 0) {
+      perror("dup2 pipe");
+      _exit(1);
+    }
+    if(close(p[0]) < 0 || close(p[1]) < 0) {
+      perror("close pipe");
+      _exit(1);
+    }
+    if(execvp(file, (char **)args) < 0)
+      perror("execvp");
+    _exit(1);
+  case -1:
+    fatal(errno, "fork");
+  }
+  if(close(p[1]) < 0)
+    fatal(errno, "close pipe");
+  char buffer[512];
+  int n;
+  while((n = read(p[0], buffer, sizeof buffer)) > 0
+        || (n < 0 && errno == EINTR)) {
+    if(n > 0)
+      output.append(buffer, n);
+  }
+  if(n < 0)
+    fatal(errno, "read pipe");
+  if(close(p[0]) < 0)
+    fatal(errno, "close pipe");
+  int status;
+  if(waitpid(pid, &status, 0) < 0)
+    fatal(errno, "wait for %s", file);
+  if(status)
+    fatal(0, "%s failed: wait status %#x", file, status);
+}
+
+// Return true if path is a block device
+static bool is_block_device(const std::string &path) {
+  struct stat sb;
+
+  if(stat(path.c_str(), &sb) < 0)
+    return 0;
+  return S_ISBLK(sb.st_mode) ? true : false;
+}
+
+// Return true if path is in use (it must be a block device)
+static bool block_device_in_use(const std::string &path) {
+#if __linux__
+  // Ask lslbk about the target path
+  const char *args[] = { "lsblk", "--json", path.c_str(), (char *)nullptr };
+  std::string json;
+  capture(json, args[0], args);
+  Json::Value root;
+  std::istringstream s(json);
+  s >> root;                    // throws on error.
+  auto dev = root["blockdevices"][0];
+  auto mountpoint = dev["mountpoint"];
+  // Don't overwrite mounted filesystems
+  if(!mountpoint.isNull()) {
+    fprintf(stderr, "WARNING: %s is mounted on %s\n",
+            mountpoint.asString().c_str(), path.c_str());
+    return true;
+  }
+  // Don't overwrite devices with children.
+  // This means devices with partition tables, LVM containers, etc.
+  auto children = dev["children"];
+  if(!children.isNull()) {
+    // Get list of children
+    std::ostringstream childs;
+    bool first = true;
+    for(auto &child: children) {
+      if(!first)
+        childs << ",";
+      first = false;
+      childs << child["name"].asString();
+    }
+    fprintf(stderr, "WARNING: %s is in use: %s\n", path.c_str(),
+            childs.str().c_str());
+    return true;
+  }
+  return !mountpoint.isNull() || !children.isNull();
+#endif
+  return false;
+}
+
+// Return true if path is safe to write to
 bool safe_path(const std::string &path) {
   if(path.substr(0, 4) == "/dev") {
     struct stat sb;
@@ -26,6 +125,9 @@ bool safe_path(const std::string &path) {
       fprintf(stderr, "WARNING: attempt to use nonexistent file in /dev\n");
       return false;
     }
+  }
+  if(is_block_device(path) && block_device_in_use(path)) {
+    return false;
   }
   return true;
 }
