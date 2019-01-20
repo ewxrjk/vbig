@@ -1,6 +1,6 @@
 #
 # This file is part of vbig.
-# Copyright (C) 2011, 2013-16 Richard Kettlewell
+# Copyright (C) 2011, 2013-16, 2019 Richard Kettlewell
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,7 +20,8 @@ if WANT_FAKESTICK
   noinst_LTLIBRARIES=fakestick.la
 endif
 noinst_PROGRAMS=t-arcfour t-aes-ctr-drbg
-vbig_SOURCES=vbig.cc Rng.h Arcfour.h Arcfour.cc CtrDrbg.h CtrDrbg.cc
+vbig_SOURCES=vbig.cc Rng.h Arcfour.h Arcfour.cc CtrDrbg.h CtrDrbg.cc \
+	vbig.h safepath.cc
 vbig_LDADD=${NETTLE_LIBS}
 t_arcfour_SOURCES=t-arcfour.cc Arcfour.cc
 t_arcfour_LDADD=${NETTLE_LIBS}
