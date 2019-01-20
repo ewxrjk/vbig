@@ -1,6 +1,6 @@
 /*
  * This file is part of vbig.
- * Copyright (C) 2015 Richard Kettlewell
+ * Copyright (C) 2015, 2019 Richard Kettlewell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -102,6 +102,22 @@ void CtrDrbg::incr(uint8_t *v, size_t vlen) {
             :
             : "r"(v)
             : "r1", "r2", "r3", "cc");
+    return;
+  }
+#endif
+#if __GNUC__ && __aarch64__
+  if(__builtin_expect(vlen == 16, 1)) {
+    __asm__("ldp x1,x2,[%0]\n\t"
+            "rev x1,x1\n\t"
+            "rev x2,x2\n\t"
+            "adds x2,x2,1\n\t"
+            "adcs x1,x1,xzr\n\t"
+            "rev x1,x1\n\t"
+            "rev x2,x2\n\t"
+            "stp x1,x2,[%0]"
+            :
+            : "r"(v)
+            : "x1", "x2", "cc");
     return;
   }
 #endif
