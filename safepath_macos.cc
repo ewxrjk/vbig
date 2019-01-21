@@ -49,8 +49,9 @@ bool block_device_in_use(const std::string &path) {
   TiXmlDocument dom;
   std::istringstream s(xml);
   s >> dom;
-  // TODO error handling above?
   TiXmlElement *root = dom.RootElement(), *rd = NULL;
+  if(!root)
+    fatal(0, "diskutil: xml parse failed");
   for(TiXmlElement *re = root->FirstChildElement(); re; re = re->NextSiblingElement()) {
     if(re->ValueStr() == "dict") {
       rd = re;
