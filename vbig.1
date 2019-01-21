@@ -40,10 +40,9 @@ cache between the write and read).  Also you probably want \fB-p\fR.
 .PP
 \fIPATH\fR can refer to an ordinary file on a mounted file system,
 which vbig will create or truncate as necessary, or a block device.
-Note that if it's a file, vbig won't delete it after it's done.  Also,
-be careful when specifying a block device - don't accidentally
-overwrite a filesystem you care about!  vbig doesn't do sanity checks
-and is as dangerous as \fBdd\fR.
+Note that if it's a file, vbig won't delete it after it's done.
+vbig has some platform-dependent sanity checks but you should
+nevertheless be cautious when using it; it as as dangerous as \fBdd\fR(1).
 .PP
 \fISIZE\fR may end with \fBK\fR, \fBM\fR or \fBG\fR to select (binary)
 kilobytes, megabytes or gigabytes.

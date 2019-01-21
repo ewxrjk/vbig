@@ -20,6 +20,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <cstdio>
+#include <cerrno>
 #include <unistd.h>
 #include <sstream>
 #if __linux__
@@ -81,14 +82,14 @@ static bool is_block_device(const std::string &path) {
 static bool block_device_in_use(const std::string &path) {
 #if __linux__
   // Ask lslbk about the target path
-  const char *args[] = { "lsblk", "--json", path.c_str(), (char *)nullptr };
+  const char *args[] = { "lsblk", "--json", path.c_str(), (char *)NULL };
   std::string json;
   capture(json, args[0], args);
   Json::Value root;
   std::istringstream s(json);
   s >> root;                    // throws on error.
-  auto dev = root["blockdevices"][0];
-  auto mountpoint = dev["mountpoint"];
+  Json::Value &dev = root["blockdevices"][0];
+  Json::Value &mountpoint = dev["mountpoint"];
   // Don't overwrite mounted filesystems
   if(!mountpoint.isNull()) {
     fprintf(stderr, "WARNING: %s is mounted on %s\n",
@@ -97,12 +98,14 @@ static bool block_device_in_use(const std::string &path) {
   }
   // Don't overwrite devices with children.
   // This means devices with partition tables, LVM containers, etc.
-  auto children = dev["children"];
+  Json::Value &children = dev["children"];
   if(!children.isNull()) {
     // Get list of children
     std::ostringstream childs;
     bool first = true;
-    for(auto &child: children) {
+    for(Json::Value::iterator it = children.begin();
+        it != children.end(); ++it) {
+      const Json::Value &child = *it;
       if(!first)
         childs << ",";
       first = false;
@@ -112,7 +115,6 @@ static bool block_device_in_use(const std::string &path) {
             childs.str().c_str());
     return true;
   }
-  return !mountpoint.isNull() || !children.isNull();
 #endif
   return false;
 }
