@@ -22,7 +22,7 @@ endif
 noinst_PROGRAMS=t-arcfour t-aes-ctr-drbg
 vbig_SOURCES=vbig.cc Rng.h Arcfour.h Arcfour.cc CtrDrbg.h CtrDrbg.cc \
 	vbig.h safepath.cc
-vbig_LDADD=${NETTLE_LIBS} ${JSONCPP_LIBS}
+vbig_LDADD=${NETTLE_LIBS} ${JSONCPP_LIBS} ${EXTRA_LIBS}
 t_arcfour_SOURCES=t-arcfour.cc Arcfour.cc
 t_arcfour_LDADD=${NETTLE_LIBS}
 t_aes_ctr_drbg_SOURCES=t-aes-ctr-drbg.cc CtrDrbg.cc

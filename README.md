@@ -9,18 +9,17 @@ The intended use is to verify that storage media work properly.
 Installation
 ------------
 
-If you got it from git:
+## Dependencies
 
-    autoreconf -is
+    apt-get install nettle-dev libjsoncpp-dev # Linux
+    brew install nettle tinyxml # macOS
 
-In any case:
+## Build and install
 
+    autoreconf -is # git clones only
     ./configure
     make check
     sudo make install
-
-You will need the Nettle library of cryptographic primitives:
-  http://www.lysator.liu.se/~nisse/nettle/
 
 Author
 ------

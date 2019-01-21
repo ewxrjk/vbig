@@ -32,6 +32,7 @@ AC_DISABLE_STATIC
 case "$host" in
 *-*-darwin* )
   AC_DEFINE([PURGE_COMMAND],["purge"], [Command to purge filesystem cache])
+  AC_SUBST([EXTRA_LIBS],[-ltinyxml])
   ;;
 *-*-linux* )
   AC_DEFINE([DROP_CACHE_FILE],["/proc/sys/vm/drop_caches"],

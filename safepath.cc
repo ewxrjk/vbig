@@ -26,6 +26,9 @@
 #if __linux__
 #include <json/json.h>
 #endif
+#if __APPLE__
+#include <tinyxml.h>
+#endif
 
 // Run a subprocess and capture its stdout
 static void capture(std::string &output, const char *file, const char **args) {
@@ -75,7 +78,14 @@ static bool is_block_device(const std::string &path) {
 
   if(stat(path.c_str(), &sb) < 0)
     return 0;
-  return S_ISBLK(sb.st_mode) ? true : false;
+  if(S_ISBLK(sb.st_mode))
+    return true;
+#if __APPLE__
+  // /dev/rdisk* are character versions of the disk devices
+  if(S_ISCHR(sb.st_mode) && major(sb.st_rdev) == 1)
+    return true;
+#endif
+  return false;
 }
 
 // Return true if path is in use (it must be a block device)
@@ -115,6 +125,49 @@ static bool block_device_in_use(const std::string &path) {
             childs.str().c_str());
     return true;
   }
+#endif
+#if __APPLE__
+  // ask diskutil about the target device
+  const char *args[] = { "diskutil", "info", "-plist", path.c_str(), (char *)NULL };
+  std::string xml;
+  capture(xml, args[0], args);
+  TiXmlDocument dom;
+  std::istringstream s(xml);
+  s >> dom;
+  // TODO error handling above?
+  TiXmlElement *root = dom.RootElement(), *rd = NULL;
+  for(TiXmlElement *re = root->FirstChildElement(); re; re = re->NextSiblingElement()) {
+    if(re->ValueStr() == "dict") {
+      rd = re;
+      break;
+    }
+  }
+  if(!rd)
+    fatal(0, "diskutil: did not find root <dict>");
+  std::string key;
+  bool foundContent = false;
+  for(TiXmlElement *rde = rd->FirstChildElement(); rde; rde = rde->NextSiblingElement()) {
+    if(rde->ValueStr() == "key")
+      key = rde->GetText();
+    else if(key == "Content") {
+      foundContent = true;
+      if(rde->ValueStr() == "string") {
+        const char *t = rde->GetText();
+        std::string content = t ? t : "";
+        if(content != "") {
+          fprintf(stderr, "WARNING: %s is in use: %s\n", path.c_str(),
+                  content.c_str());
+          return true;
+        } else
+          return false;
+      }
+      else
+        fatal(0, "diskutil: unexpected element type for content: <%s>",
+              rde->Value());
+    }
+  }
+  if(!foundContent)
+    fatal(0, "diskutil: did not find content key");
 #endif
   return false;
 }
