@@ -21,7 +21,10 @@
 #include <config.h>
 #include <string>
 
+void capture(std::string &output, const char *file, const char **args);
 bool safe_path(const std::string &path);
+bool is_block_device(const std::string &path);
+bool block_device_in_use(const std::string &path);
 void __attribute__((noreturn))
 fatal(int errno_value, const char *fmt, ...);
 
