@@ -223,9 +223,11 @@ int main(int argc, char **argv) {
 #endif
   }
   path = argv[0];
-  if(!safe_path(path) && !force) {
-    fatal(0, "use --force to override warnings");
-    exit(1);
+  if(mode != VERIFY) {
+    if(!safe_path(path) && !force) {
+      fatal(0, "use --force to override warnings");
+      exit(1);
+    }
   }
   if(seedpath) {
     if(!seedlen)
