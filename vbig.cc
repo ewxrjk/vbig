@@ -174,7 +174,7 @@ int main(int argc, char **argv) {
     case 'f': flush = true; break;
     case 'r': rngname = optarg; break;
     case 'h': help(); exit(0);
-    case 'V': puts(VERSION); exit(0);
+    case 'V': puts(VERSION " " TAG); exit(0);
     case 'F': force = true; break;
     default:
       fatal(0, "unknown option");

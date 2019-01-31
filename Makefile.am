@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+tag:=$(shell git describe --tags --dirty)
 bin_PROGRAMS=vbig
 if WANT_FAKESTICK
   noinst_LTLIBRARIES=fakestick.la
@@ -29,7 +30,7 @@ t_aes_ctr_drbg_SOURCES=t-aes-ctr-drbg.cc CtrDrbg.cc
 t_aes_ctr_drbg_LDADD=${NETTLE_LIBS}
 fakestick_la_SOURCES=fakestick.c
 fakestick_la_LDFLAGS=-module -shared -avoid-version -rpath $(shell pwd)
-AM_CXXFLAGS=${NETTLE_CFLAGS} ${JSONCPP_CFLAGS}
+AM_CXXFLAGS=${NETTLE_CFLAGS} ${JSONCPP_CFLAGS} -DTAG=\"${tag}\"
 man_MANS=vbig.1
 TESTS=t-arcfour t-aes-ctr-drbg t-both t-seeded t-separate t-corrupt t-truncated t-extended t-args t-fakestick
 EXTRA_DIST=${man_MANS} README.md ${TESTS} t-fakestick-captive
