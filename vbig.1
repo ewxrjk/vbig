@@ -131,5 +131,28 @@ Displays a usage message.
 .TP
 .B --version\fR, \fB-V
 Displays the version strings.
+.SH EXAMPLES
+To test a storage device,
+make sure that it has nothing of value on it
+(since it will be overwritten)
+and then:
+.PP
+.nf
+vbig --flush --progress /dev/sde
+.fi
+.PP
+The real size will be reported at the end.
+You will need to (re-)establish a partition table.
+.PP
+If you want to verify that the device has a particular size,
+in this example 1 gigabyte,
+you can specify it on the command line:
+.PP
+.nf
+vbig --flush --progress /dev/sde 1G
+.fi
+.PP
+If the device is bigger or smaller than the specified size
+then an error will be reported.
 .SH AUTHOR
 Richard Kettlewell <rjk@greenend.org.uk>
