@@ -31,21 +31,28 @@ pseudo-random data, and/or verifies that it has the expected contents.
 The intended use is to test whether storage media really do what they
 say on the tin.
 .PP
-By default vbig will generate a new random seed, write data to the
-specified file or device until the device is full, read the data back
-to check that everything written was properly stored, and report
-the device's size.
-Ideally, if you have privilege to do so, you would also specify
-\fB-f\fR (to flush the operating system disk cache between the write
-and read).
-Also you probably want \fB-p\fR.
+By default \fBvbig\fR will:
+.IP 1.
+Generate a new random seed.
+.IP 2.
+Write data to the specified file or device until the device is full.
+.IP 3.
+Read the data back to check that everything written was properly stored.
+.IP 4.
+Report the device's size.
 .PP
+If you have privilege to do so, you should specify
+\fB--flush\fR to flush the operating system disk cache between the write
+and read.
+Normally you would also specify \fB--progress\fR.
+.SS Files
 \fIPATH\fR can refer to an ordinary file on a mounted file system,
 which vbig will create or truncate as necessary, or a block device.
 Note that if it's a file, vbig won't delete it after it's done.
+.PP
 vbig has some platform-dependent sanity checks but you should
 nevertheless be cautious when using it; it as as dangerous as \fBdd\fR(1).
-.PP
+.SS Sizes
 \fISIZE\fR may end with \fBK\fR, \fBM\fR or \fBG\fR to select (binary)
 kilobytes, megabytes or gigabytes.
 The size is mandatory when creating a file but optional when verifying
@@ -53,9 +60,42 @@ it, unless \fB\-\-entire\fR is specified.
 If \fISIZE\fR not specified when writing-then-verifying, it is as if
 \fB\-\-entire\fR was specified.
 .PP
-If no seed or seed file is specified:
+In \fB--both\fR mode (the default):
+.IP \(bu
+If no size is specified, the whole device will be written until it is full.
+.IP \(bu
+If a size is specified then the device is expected to have the specified size
+and an error is reported if it is bigger or smaller.
+.IP \(bu
+The \fB--entire\fR option has no additional effect.
+.PP
+In \fB--create\fR mode:
+.IP \(bu
+If a size is specified then the device is expected to have the specified size
+and an error is reported if it is smaller
+The real size will be printed to stdout.
+No error is reported if it is bigger.
+.IP \(bu
+If no size is specified then \fB--entire\fR must be specified.
+The whole device is written until it is full.
+.PP
+In \fB--verify\fR mode:
+.IP \(bu
+If a size is specified then the device is expected to have the specified size
+and an error is reported if it is bigger or smaller.
+.IP \(bu
+If no size is specified but \fB--entire\fR is specified
+then the whole device is read until end of file.
+.IP \(bu
+If no size is specified and \fB--entire\fR is not specified
+then \fBstat\fR(2) is used to discover the advertized device size.
+.SS Random Seeds
+If neither \fB--seed\fR nor \fB--seed-file\fR are specified:
+.IP \(bu
 in \fB--both\fR mode a fresh random seed is read from the system's
-random number generator; in other modes a fixed default seed is used.
+random number generator
+.IP \(bu
+in other modes a fixed default seed is used.
 .SH OPTIONS
 .TP
 .B --seed\fR, \fB-s \fISEED
