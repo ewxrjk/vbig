@@ -9,6 +9,7 @@ addons:
     - ubuntu-toolchain-r-test
     packages:
     - nettle-dev
+    - libjsoncpp-dev
 language: cpp
 compiler:
 - clang
@@ -24,6 +25,7 @@ matrix:
 
 install:
 - if [[ "$TRAVIS_OS_NAME" == "osx" && ! -d /usr/local/Cellar/nettle ]]; then brew install nettle; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install tinyxml; fi
 
 script:
 - autoreconf -is

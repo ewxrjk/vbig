@@ -1,6 +1,6 @@
 /*
  * This file is part of vbig.
- * Copyright (C) 2011, 2013, 2014, 2015 Richard Kettlewell
+ * Copyright (C) 2011, 2013-2017, 2019 Richard Kettlewell
  * Copyright (C) 2013 Ian Jackson
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <config.h>
+#include "vbig.h"
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>
@@ -45,6 +45,7 @@ const struct option opts[] = {
   { "entire", no_argument, 0, 'e' },
   { "progress", no_argument, 0, 'p' },
   { "rng", required_argument, 0,'r' },
+  { "force", no_argument, 0, 'F' },
   { "help", no_argument, 0, 'h' },
   { "version", no_argument, 0, 'V' },
   { 0, 0, 0, 0 },
@@ -68,6 +69,7 @@ static void help(void) {
          "  --entire, -e      Write until full; read until EOF\n"
          "  --progress, -p    Show progress as we go\n"
          "  --rng, -r NAME    Select RNG (arcfour, or aes-ctr-drbg-128/192/256)\n"
+         "  --force, -F       Ignore warnings\n"
          "  --help, -h        Display usage message\n"
          "  --version, -V     Display version string\n");
 }
@@ -82,7 +84,7 @@ enum mode_type {
 static void clearprogress();
 
 // Report an error and exit
-static void __attribute__((noreturn))
+void __attribute__((noreturn))
 fatal(int errno_value, const char *fmt, ...) {
   va_list ap;
   clearprogress();
@@ -154,6 +156,7 @@ int main(int argc, char **argv) {
   mode_type mode = BOTH;
   int n;
   char *ep;
+  bool force = false;
   const char *rngname = "arcfour-drop-3072";
   while((n = getopt_long(argc, argv, "+s:S:L:bvcepfhV", opts, 0)) >= 0) {
     switch(n) {
@@ -172,6 +175,7 @@ int main(int argc, char **argv) {
     case 'r': rngname = optarg; break;
     case 'h': help(); exit(0);
     case 'V': puts(VERSION); exit(0);
+    case 'F': force = true; break;
     default:
       fatal(0, "unknown option");
     }
@@ -218,6 +222,13 @@ int main(int argc, char **argv) {
 	  " and random device not supported on this system");
 #endif
   }
+  path = argv[0];
+  if(mode != VERIFY) {
+    if(!safe_path(path) && !force) {
+      fatal(0, "use --force to override warnings");
+      exit(1);
+    }
+  }
   if(seedpath) {
     if(!seedlen)
       seedlen = DEFAULT_SEED_LENGTH;
@@ -237,7 +248,6 @@ int main(int argc, char **argv) {
     seed = (void*)default_seed;
     seedlen = sizeof(default_seed)-1;
   }
-  path = argv[0];
   if(argc > 1) {
     /* Explicit size specified */
     errno = 0;
