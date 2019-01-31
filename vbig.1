@@ -34,9 +34,11 @@ say on the tin.
 By default vbig will generate a new random seed, write data to the
 specified file or device until the device is full, read the data back
 to check that everything written was properly stored, and report
-the device's size.  Ideally, if you have privilege to do so, you
-would also specify \fB-f\fR (to flush the operating system disk
-cache between the write and read).  Also you probably want \fB-p\fR.
+the device's size.
+Ideally, if you have privilege to do so, you would also specify
+\fB-f\fR (to flush the operating system disk cache between the write
+and read).
+Also you probably want \fB-p\fR.
 .PP
 \fIPATH\fR can refer to an ordinary file on a mounted file system,
 which vbig will create or truncate as necessary, or a block device.
@@ -47,8 +49,9 @@ nevertheless be cautious when using it; it as as dangerous as \fBdd\fR(1).
 \fISIZE\fR may end with \fBK\fR, \fBM\fR or \fBG\fR to select (binary)
 kilobytes, megabytes or gigabytes.
 The size is mandatory when creating a file but optional when verifying
-it, unless \fB\-\-entire\fR is specified.  If \fISIZE\fR not specified when
-writing-then-verifying, it is as if \fB\-\-entire\fR was specified.
+it, unless \fB\-\-entire\fR is specified.
+If \fISIZE\fR not specified when writing-then-verifying, it is as if
+\fB\-\-entire\fR was specified.
 .PP
 If no seed or seed file is specified:
 in \fB--both\fR mode a fresh random seed is read from the system's
@@ -60,9 +63,9 @@ Specifies the random seed to use.
 Optional.
 .TP
 .B --seed-file\fR, \fB-S \fISEED-FILE
-Specifies where the random seed should be read from.  The
-first \fISEED-LENGTH\fR bytes will be used, or the whole file
-if it is shorter.
+Specifies where the random seed should be read from.
+The first \fISEED-LENGTH\fR bytes will be used, or the whole file if
+it is shorter.
 .TP
 .B --seed-length\fR, \fB-L \fISEED-LENGTH
 Specifies the (maximum) seed length in bytes.
@@ -92,9 +95,10 @@ Show the progress (in bytes) on stdout.
 .TP
 .B --entire\fR, \fB-e
 When writing, keep going until the device is full (No space left
-on device).  When reading, keep going until the end of the file
-or device.  \fISIZE\fR should not be specified.  The actual size
-written or verified will be printed to stdout.
+on device).
+When reading, keep going until the end of the file or device.
+\fISIZE\fR should not be specified.
+The actual size written or verified will be printed to stdout.
 .TP
 .B --rng\fR, \fB-r \fIRNG
 Selects the PRNG to use.
