@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Richard Kettlewell <rjk@greenend.org.uk>
 Standards-Version: 3.9.2
 Homepage: https://github.com/ewxrjk/vbig
-Build-Depends: nettle-dev,nbdkit-plugin-dev
+Build-Depends: nettle-dev,nbdkit-plugin-dev,libjsoncpp-dev
 
 Package: vbig
 Architecture: any
