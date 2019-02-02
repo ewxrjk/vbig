@@ -33,5 +33,5 @@ fakestick_la_LDFLAGS=-module -shared -avoid-version -rpath $(shell pwd)
 AM_CXXFLAGS=${NETTLE_CFLAGS} ${JSONCPP_CFLAGS} -DTAG=\"${tag}\"
 man_MANS=vbig.1
 TESTS=t-arcfour t-aes-ctr-drbg t-both t-seeded t-separate t-corrupt t-truncated t-extended t-args t-fakestick
-EXTRA_DIST=${man_MANS} README.md ${TESTS} t-fakestick-captive
+EXTRA_DIST=${man_MANS} README.md ${TESTS} t-fakestick-captive CHANGES.md
 ACLOCAL_AMFLAGS=-I m4
