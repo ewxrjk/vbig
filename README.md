@@ -1,30 +1,37 @@
-vbig
-====
+# vbig
 
 [![Build Status](https://travis-ci.org/ewxrjk/vbig.svg?branch=master)](https://travis-ci.org/ewxrjk/vbig)
 
 vbig creates or verifies a file full of psuedo-random data.
 The intended use is to verify that storage media work properly.
 
-Installation
-------------
+## Installation
 
-## Dependencies
+### Dependencies
 
     apt-get install nettle-dev libjsoncpp-dev # Linux
     brew install nettle tinyxml # macOS
 
-## Build and install
+### Build and install
 
     autoreconf -is # git clones only
     ./configure
     make check
     sudo make install
 
-Author
-------
+### Binaries
 
-Copyright (C) 2011, 2013-2016 Richard Kettlewell
+`.tar` and `.deb` files can be found at
+[www.greenend.org.uk/rjk/vbig](http://www.greenend.org.uk/rjk/vbig/).
+They are signed with PGP key 9006B0ED710DB81B76D368D9D3388BA18A741BEF.
+
+    gpg --verify vbig_*_amd64.deb.asc
+    sudo apt install libjsoncpp1 libnettle6
+    sudo dpkg -i vbig_*_amd64.deb
+
+## Authors
+
+Copyright (C) 2011, 2013-2019 Richard Kettlewell
 
 Copyright (C) 2013 Ian Jackson
 
