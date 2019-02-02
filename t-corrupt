@@ -37,7 +37,7 @@ check() {
   rm -f testfile.$$ testoutput.$$ testexpect.$$
 }
 
-check 132
+check 228
 check 87 --rng arcfour
 check 132 --rng arcfour-drop-3072
 check 228 --rng aes-ctr-drbg-128

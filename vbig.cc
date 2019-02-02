@@ -157,7 +157,7 @@ int main(int argc, char **argv) {
   int n;
   char *ep;
   bool force = false;
-  const char *rngname = "arcfour-drop-3072";
+  const char *rngname = "aes-ctr-drbg-128";
   while((n = getopt_long(argc, argv, "+s:S:L:bvcepfhV", opts, 0)) >= 0) {
     switch(n) {
     case 's': seed = optarg; seedlen = strlen(optarg); break;
