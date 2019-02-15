@@ -2,7 +2,7 @@ os:
 - linux
 - osx
 
-dist: trusty
+dist: xenial
 addons:
   apt:
     sources:
@@ -10,13 +10,11 @@ addons:
     packages:
     - nettle-dev
     - libjsoncpp-dev
+    - nbdkit-plugin-dev
 language: cpp
 compiler:
 - clang
 - gcc
-
-#- sudo apt-get install -qq nbdkit-plugin-dev
-# Not in any of the ancient platforms Travis offers
 
 matrix:
   exclude:

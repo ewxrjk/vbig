@@ -41,6 +41,7 @@ case "$host" in
 esac
 AC_LANG([C++])
 AC_PROG_CXX
+CXXFLAGS="-std=c++11 ${CXXFLAGS}"
 AC_CHECK_HEADER([nbdkit-plugin.h],[want_fakestick=true],[want_fakestick=false])
 AM_CONDITIONAL([WANT_FAKESTICK],[${want_fakestick}])
 PKG_CHECK_MODULES([NETTLE],[nettle])
