@@ -94,11 +94,11 @@ void __attribute__((noreturn)) fatal(int errno_value, const char *fmt, ...) {
   exit(1);
 }
 
-// Evict whatever FP points to from RAM
-static void flushCache(FILE *fp) {
+// Evict whatever TFD points to from RAM
+static void flushCache(int tfd) {
   // drop_caches only evicts clean pages, so first the target file is
   // synced.
-  if(fsync(fileno(fp)) < 0)
+  if(fsync(tfd) < 0)
     fatal(errno, "fsync");
 #if defined DROP_CACHE_FILE
   int fd;
@@ -318,26 +318,68 @@ static void showprogress(long long amount, const char *show) {
   flushstdout();
 }
 
+// Equivalent to write() but handles short writes and EINTR
+static ssize_t writeall(int fd, const uint8_t *buffer, size_t bytes) {
+  ssize_t total = 0;
+  while(bytes > 0) {
+    ssize_t n = write(fd, buffer, bytes);
+    if(n < 0) {
+      if(errno != EINTR)
+        return n;
+    } else {
+      static bool moaned = false;
+      if(n == 0 && !moaned) {
+        fprintf(stderr, "write: unexpectedly returned 0\n");
+        moaned = true;
+      }
+      assert((size_t)n <= bytes);
+      buffer += n;
+      bytes -= n;
+      total += n;
+    }
+  }
+  return total;
+}
+
+// Equivalent to read() but handles short reads and EINTR
+static ssize_t readall(int fd, uint8_t *buffer, size_t bytes) {
+  ssize_t total = 0;
+  for(;;) {
+    ssize_t n = read(fd, buffer, bytes);
+    if(n < 0) {
+      if(errno != EINTR)
+        return n;
+    } else {
+      assert((size_t)n <= bytes);
+      buffer += n;
+      bytes -= n;
+      total += n;
+      if(n == 0)
+        break;
+    }
+  }
+  return total;
+}
+
 // write/verify the target file
 static long long execute(mode_type mode, bool entire, const char *show,
                          Rng *rng) {
   rng->seed((const uint8_t *)seed, seedlen);
-  FILE *fp = fopen(path, mode == VERIFY ? "rb" : "wb");
-  if(!fp)
+  int fd = open(path, mode == VERIFY ? O_RDONLY : O_WRONLY | O_CREAT | O_TRUNC,
+                0666);
+  if(fd < 0)
     fatal(errno, "open %s", path);
   if(mode == VERIFY && flush)
-    flushCache(fp);
-  if(mode == CREATE && entire)
-    setvbuf(fp, 0, _IONBF, 0);
+    flushCache(fd);
   uint8_t generated[4096], input[4096];
   long long remain = size;
   while(remain > 0) {
-    size_t bytesGenerated =
+    ssize_t bytesGenerated =
         (remain > (ssize_t)sizeof generated ? sizeof generated : remain);
     rng->stream(generated, bytesGenerated);
     if(mode == CREATE) {
-      size_t bytesWritten = fwrite(generated, 1, bytesGenerated, fp);
-      if(ferror(fp)) {
+      ssize_t bytesWritten = writeall(fd, generated, bytesGenerated);
+      if(bytesWritten < 0) {
         if(!entire || errno != ENOSPC)
           fatal(errno, "write %s", path);
         remain -= bytesWritten;
@@ -345,11 +387,11 @@ static long long execute(mode_type mode, bool entire, const char *show,
       }
       assert(bytesWritten == bytesGenerated);
     } else {
-      size_t bytesRead = fread(input, 1, bytesGenerated, fp);
-      if(ferror(fp))
+      ssize_t bytesRead = readall(fd, input, bytesGenerated);
+      if(bytesRead < 0)
         fatal(errno, "read %s", path);
       if(memcmp(generated, input, bytesRead)) {
-        for(size_t n = 0; n < bytesRead; ++n)
+        for(ssize_t n = 0; n < bytesRead; ++n)
           if(generated[n] != input[n])
             fatal(0, "%s: corrupted at %lld/%lld bytes (expected %d got %d)",
                   path, size - remain + n, size, (unsigned char)generated[n],
@@ -358,7 +400,6 @@ static long long execute(mode_type mode, bool entire, const char *show,
       /* Truncated */
       if(bytesRead < bytesGenerated) {
         if(entire) {
-          assert(feof(fp));
           remain -= bytesRead;
           break;
         }
@@ -370,14 +411,16 @@ static long long execute(mode_type mode, bool entire, const char *show,
     showprogress(size - remain, mode == VERIFY ? "verifying" : "writing");
   }
   clearprogress();
-  if(mode == VERIFY && !entire && getc(fp) != EOF)
-    fatal(0, "%s: extended beyond %lld bytes", path, size);
-  if(mode == CREATE && flush) {
-    if(fflush(fp) < 0)
-      fatal(errno, "flush %s", path);
-    flushCache(fp);
+  if(mode == VERIFY && !entire) {
+    ssize_t bytesRead = readall(fd, input, 1);
+    if(bytesRead < 0)
+      fatal(errno, "read %s", path);
+    if(bytesRead != 0)
+      fatal(0, "%s: extended beyond %lld bytes", path, size);
   }
-  if(fclose(fp) < 0)
+  if(mode == CREATE && flush)
+    flushCache(fd);
+  if(close(fd) < 0)
     fatal(errno, "close %s", path);
   /* Actual size written/verified */
   long long done = size - remain;
