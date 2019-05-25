@@ -12,7 +12,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -35,57 +35,53 @@
 
 // Command line options
 const struct option opts[] = {
-  { "seed", required_argument, 0, 's' },
-  { "seed-file", required_argument, 0, 'S' },
-  { "seed-length", required_argument, 0, 'L' },
-  { "both", no_argument, 0, 'b' },
-  { "verify", no_argument, 0, 'v' },
-  { "create", no_argument, 0, 'c' },
-  { "flush", no_argument, 0, 'f' },
-  { "entire", no_argument, 0, 'e' },
-  { "progress", no_argument, 0, 'p' },
-  { "rng", required_argument, 0,'r' },
-  { "force", no_argument, 0, 'F' },
-  { "help", no_argument, 0, 'h' },
-  { "version", no_argument, 0, 'V' },
-  { 0, 0, 0, 0 },
+    {"seed", required_argument, 0, 's'},
+    {"seed-file", required_argument, 0, 'S'},
+    {"seed-length", required_argument, 0, 'L'},
+    {"both", no_argument, 0, 'b'},
+    {"verify", no_argument, 0, 'v'},
+    {"create", no_argument, 0, 'c'},
+    {"flush", no_argument, 0, 'f'},
+    {"entire", no_argument, 0, 'e'},
+    {"progress", no_argument, 0, 'p'},
+    {"rng", required_argument, 0, 'r'},
+    {"force", no_argument, 0, 'F'},
+    {"help", no_argument, 0, 'h'},
+    {"version", no_argument, 0, 'V'},
+    {0, 0, 0, 0},
 };
 
 // Display help message
 static void help(void) {
-  printf("vbig - create or verify a large but pseudo-random file\n"
-         "\n"
-         "Usage:\n"
-         "  vbig [OPTIONS] [--both|--verify|--create] PATH [SIZE]\n"
-         "\n"
-         "Options:\n"
-         "  --seed, -s        Specify random seed as string\n"
-         "  --seed-file, -S   Read random seed from (start of) this file\n"
-         "  --seed-length, -L Set (maximum) seed length to read from file\n"
-         "  --verify, -v      Verify that PATH contains the expected contents\n"
-         "  --create, -c      Create PATH with psuedo-random contents\n"
-         "  --both, -b        Do both create and verify (default)\n"
-         "  --flush, -f       Flush cache\n"
-         "  --entire, -e      Write until full; read until EOF\n"
-         "  --progress, -p    Show progress as we go\n"
-         "  --rng, -r NAME    Select RNG (arcfour, or aes-ctr-drbg-128/192/256)\n"
-         "  --force, -F       Ignore warnings\n"
-         "  --help, -h        Display usage message\n"
-         "  --version, -V     Display version string\n");
+  printf(
+      "vbig - create or verify a large but pseudo-random file\n"
+      "\n"
+      "Usage:\n"
+      "  vbig [OPTIONS] [--both|--verify|--create] PATH [SIZE]\n"
+      "\n"
+      "Options:\n"
+      "  --seed, -s        Specify random seed as string\n"
+      "  --seed-file, -S   Read random seed from (start of) this file\n"
+      "  --seed-length, -L Set (maximum) seed length to read from file\n"
+      "  --verify, -v      Verify that PATH contains the expected contents\n"
+      "  --create, -c      Create PATH with psuedo-random contents\n"
+      "  --both, -b        Do both create and verify (default)\n"
+      "  --flush, -f       Flush cache\n"
+      "  --entire, -e      Write until full; read until EOF\n"
+      "  --progress, -p    Show progress as we go\n"
+      "  --rng, -r NAME    Select RNG (arcfour, or aes-ctr-drbg-128/192/256)\n"
+      "  --force, -F       Ignore warnings\n"
+      "  --help, -h        Display usage message\n"
+      "  --version, -V     Display version string\n");
 }
 
 // Possible modes of operation
-enum mode_type {
-  VERIFY,
-  CREATE,
-  BOTH
-};
+enum mode_type { VERIFY, CREATE, BOTH };
 
 static void clearprogress();
 
 // Report an error and exit
-void __attribute__((noreturn))
-fatal(int errno_value, const char *fmt, ...) {
+void __attribute__((noreturn)) fatal(int errno_value, const char *fmt, ...) {
   va_list ap;
   clearprogress();
   fprintf(stderr, "ERROR: ");
@@ -117,9 +113,8 @@ static void flushCache(FILE *fp) {
     fatal(errno, "executing %s", PURGE_COMMAND);
   else if(rc) {
     if(WIFSIGNALED(rc)) {
-      fprintf(stderr, "%s%s\n", 
-	      strsignal(WTERMSIG(rc)),
-	      WCOREDUMP(rc) ? " (core dumped)" : "");
+      fprintf(stderr, "%s%s\n", strsignal(WTERMSIG(rc)),
+              WCOREDUMP(rc) ? " (core dumped)" : "");
       exit(WTERMSIG(rc) + 128);
     } else
       exit(WEXITSTATUS(rc));
@@ -160,11 +155,15 @@ int main(int argc, char **argv) {
   const char *rngname = "aes-ctr-drbg-128";
   while((n = getopt_long(argc, argv, "+s:S:L:bvcepfhV", opts, 0)) >= 0) {
     switch(n) {
-    case 's': seed = optarg; seedlen = strlen(optarg); break;
+    case 's':
+      seed = optarg;
+      seedlen = strlen(optarg);
+      break;
     case 'S': seedpath = optarg; break;
     case 'L':
-      seedlen = strtoul(optarg,&ep,0);
-      if(ep==optarg || *ep) fatal(0, "bad number for -S");
+      seedlen = strtoul(optarg, &ep, 0);
+      if(ep == optarg || *ep)
+        fatal(0, "bad number for -S");
       break;
     case 'b': mode = BOTH; break;
     case 'v': mode = VERIFY; break;
@@ -176,8 +175,7 @@ int main(int argc, char **argv) {
     case 'h': help(); exit(0);
     case 'V': puts(VERSION " " TAG); exit(0);
     case 'F': force = true; break;
-    default:
-      fatal(0, "unknown option");
+    default: fatal(0, "unknown option");
     }
   }
   argc -= optind;
@@ -219,7 +217,7 @@ int main(int argc, char **argv) {
     seedpath = RANDOM_DEVICE;
 #else
     fatal(0, "no --seed or --seed-file specified in --both mode"
-	  " and random device not supported on this system");
+             " and random device not supported on this system");
 #endif
   }
   path = argv[0];
@@ -243,10 +241,10 @@ int main(int argc, char **argv) {
       fatal(errno, "read %s", seedpath);
     fclose(seedfile);
   }
-  if (!seed) {
+  if(!seed) {
     /* No seed specified, use a constant */
-    seed = (void*)default_seed;
-    seedlen = sizeof(default_seed)-1;
+    seed = (void *)default_seed;
+    seedlen = sizeof(default_seed) - 1;
   }
   if(argc > 1) {
     /* Explicit size specified */
@@ -291,28 +289,31 @@ static void flushstdout() {
 
 // clear the progress indicator
 static void clearprogress() {
-  if (!progress) return;
-  printf(" %-10s %*s   \r", "", (int)sizeof(long long)*4, "");
+  if(!progress)
+    return;
+  printf(" %-10s %*s   \r", "", (int)sizeof(long long) * 4, "");
   flushstdout();
 }
 
 // update progress indicator
 static void showprogress(long long amount, const char *show) {
-  if (!progress) return;
+  if(!progress)
+    return;
 
   static int counter;
-  if (counter++ < 1000) return;
+  if(counter++ < 1000)
+    return;
   counter = 0;
 
   int triples = sizeof(amount);
-  char rawbuf[triples*3 + 1];
-  char outbuf[triples*4 + 1];
-  snprintf(rawbuf, sizeof(rawbuf), "% *lld", (int)sizeof(rawbuf)-1, amount);
-  for (int i=0; i<triples; i++) {
-    outbuf[i*4] = ' ';
-    memcpy(outbuf + i*4 + 1, rawbuf + i*3, 3);
+  char rawbuf[triples * 3 + 1];
+  char outbuf[triples * 4 + 1];
+  snprintf(rawbuf, sizeof(rawbuf), "% *lld", (int)sizeof(rawbuf) - 1, amount);
+  for(int i = 0; i < triples; i++) {
+    outbuf[i * 4] = ' ';
+    memcpy(outbuf + i * 4 + 1, rawbuf + i * 3, 3);
   }
-  outbuf[triples*4] = 0;
+  outbuf[triples * 4] = 0;
   printf(" %-10s %s...\r", outbuf, show);
   flushstdout();
 }
@@ -331,17 +332,16 @@ static long long execute(mode_type mode, bool entire, const char *show,
   uint8_t generated[4096], input[4096];
   long long remain = size;
   while(remain > 0) {
-    size_t bytesGenerated = (remain > (ssize_t)sizeof generated
-                             ? sizeof generated
-                             : remain);
+    size_t bytesGenerated =
+        (remain > (ssize_t)sizeof generated ? sizeof generated : remain);
     rng->stream(generated, bytesGenerated);
     if(mode == CREATE) {
       size_t bytesWritten = fwrite(generated, 1, bytesGenerated, fp);
       if(ferror(fp)) {
-	if(!entire || errno != ENOSPC)
-	  fatal(errno, "write %s", path);
-	remain -= bytesWritten;
-	break;
+        if(!entire || errno != ENOSPC)
+          fatal(errno, "write %s", path);
+        remain -= bytesWritten;
+        break;
       }
       assert(bytesWritten == bytesGenerated);
     } else {
@@ -352,18 +352,18 @@ static long long execute(mode_type mode, bool entire, const char *show,
         for(size_t n = 0; n < bytesRead; ++n)
           if(generated[n] != input[n])
             fatal(0, "%s: corrupted at %lld/%lld bytes (expected %d got %d)",
-                    path, size - remain + n, size,
-                    (unsigned char)generated[n], (unsigned char)input[n]);
+                  path, size - remain + n, size, (unsigned char)generated[n],
+                  (unsigned char)input[n]);
       }
       /* Truncated */
       if(bytesRead < bytesGenerated) {
-	if(entire) {
-	  assert(feof(fp));
-	  remain -= bytesRead;
-	  break;
-	}
-        fatal(0, "%s: truncated at %lld/%lld bytes",
-                path, (size - remain + bytesRead), size);
+        if(entire) {
+          assert(feof(fp));
+          remain -= bytesRead;
+          break;
+        }
+        fatal(0, "%s: truncated at %lld/%lld bytes", path,
+              (size - remain + bytesRead), size);
       }
     }
     remain -= bytesGenerated;
@@ -371,8 +371,7 @@ static long long execute(mode_type mode, bool entire, const char *show,
   }
   clearprogress();
   if(mode == VERIFY && !entire && getc(fp) != EOF)
-    fatal(0, "%s: extended beyond %lld bytes",
-            path, size);
+    fatal(0, "%s: extended beyond %lld bytes", path, size);
   if(mode == CREATE && flush) {
     if(fflush(fp) < 0)
       fatal(errno, "flush %s", path);
@@ -383,9 +382,8 @@ static long long execute(mode_type mode, bool entire, const char *show,
   /* Actual size written/verified */
   long long done = size - remain;
   if(show) {
-    printf("%lld bytes (%lldM, %lldG) %s\n",
-	   done, done >> 20, done >> 30,
-	   show);
+    printf("%lld bytes (%lldM, %lldG) %s\n", done, done >> 20, done >> 30,
+           show);
     flushstdout();
   }
   return done;

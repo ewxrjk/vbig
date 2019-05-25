@@ -44,12 +44,12 @@ bool is_block_device(const std::string &path) {
 // Return true if path is in use (it must be a block device)
 bool block_device_in_use(const std::string &path) {
   // Ask lslbk about the target path
-  const char *args[] = { "lsblk", "--json", path.c_str(), (char *)NULL };
+  const char *args[] = {"lsblk", "--json", path.c_str(), (char *)NULL};
   std::string json;
   capture(json, args[0], args);
   Json::Value root;
   std::istringstream s(json);
-  s >> root;                    // throws on error.
+  s >> root; // throws on error.
   Json::Value &dev = root["blockdevices"][0];
   Json::Value &mountpoint = dev["mountpoint"];
   // Don't overwrite mounted filesystems
@@ -65,8 +65,8 @@ bool block_device_in_use(const std::string &path) {
     // Get list of children
     std::ostringstream childs;
     bool first = true;
-    for(Json::Value::iterator it = children.begin();
-        it != children.end(); ++it) {
+    for(Json::Value::iterator it = children.begin(); it != children.end();
+        ++it) {
       const Json::Value &child = *it;
       if(!first)
         childs << ",";

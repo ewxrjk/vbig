@@ -30,6 +30,6 @@ void Arcfour::seed(const uint8_t *key, size_t keylen) {
 
 void ArcfourDrop3072::seed(const uint8_t *key, size_t keylen) {
   Arcfour::seed(key, keylen);
-  uint8_t dropped[3072];        // en.wikipedia.org/wiki/RC4#Security
+  uint8_t dropped[3072]; // en.wikipedia.org/wiki/RC4#Security
   stream(dropped, sizeof dropped);
 }

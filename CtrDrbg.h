@@ -18,12 +18,12 @@
  */
 
 #ifndef CTRDRBG_H
-# define CTRDRBG_H
+#define CTRDRBG_H
 
 #include "Rng.h"
 #include <nettle/aes.h>
 
-class CtrDrbg: public Rng {
+class CtrDrbg : public Rng {
 private:
   static const size_t OUTLEN_MAX = 16;
   static const size_t KEYLEN_MAX = 32;
@@ -31,25 +31,24 @@ private:
 
   uint8_t v[OUTLEN_MAX];
 
-  void update(size_t outlen, size_t keylen,
-              const uint8_t *provided_data);
+  void update(size_t outlen, size_t keylen, const uint8_t *provided_data);
 
   virtual void setkey(const uint8_t *key) = 0;
   virtual void encrypt(const uint8_t *input, uint8_t *output) = 0;
   static void incr(uint8_t *v, size_t vlen);
+
 protected:
-  void generate(size_t outlen, size_t keylen,
-                uint8_t *outbuf, size_t length);
-  void instantiate(size_t outlen, size_t keylen,
-                   const uint8_t *entropy_input,
+  void generate(size_t outlen, size_t keylen, uint8_t *outbuf, size_t length);
+  void instantiate(size_t outlen, size_t keylen, const uint8_t *entropy_input,
                    const uint8_t *personalization_string,
                    size_t len_personalization_string);
 };
 
-class AesCtrDrbg128: public CtrDrbg {
+class AesCtrDrbg128 : public CtrDrbg {
   struct aes_ctx ctx;
   void setkey(const uint8_t *key);
   void encrypt(const uint8_t *input, uint8_t *output);
+
 public:
   void seed(const uint8_t *key, size_t keylen);
   void stream(uint8_t *outbuf, size_t length);
@@ -58,10 +57,11 @@ public:
                    size_t len_personalization_string);
 };
 
-class AesCtrDrbg192: public CtrDrbg {
+class AesCtrDrbg192 : public CtrDrbg {
   struct aes_ctx ctx;
   void setkey(const uint8_t *key);
   void encrypt(const uint8_t *input, uint8_t *output);
+
 public:
   void seed(const uint8_t *key, size_t keylen);
   void stream(uint8_t *outbuf, size_t length);
@@ -70,10 +70,11 @@ public:
                    size_t len_personalization_string);
 };
 
-class AesCtrDrbg256: public CtrDrbg {
+class AesCtrDrbg256 : public CtrDrbg {
   struct aes_ctx ctx;
   void setkey(const uint8_t *key);
   void encrypt(const uint8_t *input, uint8_t *output);
+
 public:
   void seed(const uint8_t *key, size_t keylen);
   void stream(uint8_t *outbuf, size_t length);

@@ -33,3 +33,4 @@ debian/debhelper-build-stamp
 *.log
 *.zip
 *.tar.gz
+/.vscode

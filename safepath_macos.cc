@@ -43,7 +43,8 @@ bool is_block_device(const std::string &path) {
 // Return true if path is in use (it must be a block device)
 bool block_device_in_use(const std::string &path) {
   // ask diskutil about the target device
-  const char *args[] = { "diskutil", "info", "-plist", path.c_str(), (char *)NULL };
+  const char *args[] = {"diskutil", "info", "-plist", path.c_str(),
+                        (char *)NULL};
   std::string xml;
   capture(xml, args[0], args);
   TiXmlDocument dom;
@@ -52,7 +53,8 @@ bool block_device_in_use(const std::string &path) {
   TiXmlElement *root = dom.RootElement(), *rd = NULL;
   if(!root)
     fatal(0, "diskutil: xml parse failed");
-  for(TiXmlElement *re = root->FirstChildElement(); re; re = re->NextSiblingElement()) {
+  for(TiXmlElement *re = root->FirstChildElement(); re;
+      re = re->NextSiblingElement()) {
     if(re->ValueStr() == "dict") {
       rd = re;
       break;
@@ -62,7 +64,8 @@ bool block_device_in_use(const std::string &path) {
     fatal(0, "diskutil: did not find root <dict>");
   std::string key;
   bool foundContent = false;
-  for(TiXmlElement *rde = rd->FirstChildElement(); rde; rde = rde->NextSiblingElement()) {
+  for(TiXmlElement *rde = rd->FirstChildElement(); rde;
+      rde = rde->NextSiblingElement()) {
     if(rde->ValueStr() == "key")
       key = rde->GetText();
     else if(key == "Content") {
@@ -76,8 +79,7 @@ bool block_device_in_use(const std::string &path) {
           return true;
         } else
           return false;
-      }
-      else
+      } else
         fatal(0, "diskutil: unexpected element type for content: <%s>",
               rde->Value());
     }

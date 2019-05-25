@@ -149,11 +149,11 @@ void CtrDrbg::instantiate(size_t outlen, size_t keylen,
   update(outlen, keylen, seed_material);
 }
 
-void CtrDrbg::generate(size_t outlen, size_t keylen,
-                       uint8_t *outbuf, size_t length) {
-  static const uint8_t zero[SEEDLEN_MAX] = { 0 };
+void CtrDrbg::generate(size_t outlen, size_t keylen, uint8_t *outbuf,
+                       size_t length) {
+  static const uint8_t zero[SEEDLEN_MAX] = {0};
   uint8_t output_block[OUTLEN_MAX];
-  memset(outbuf, 'A', length);  // TODO remove
+  memset(outbuf, 'A', length); // TODO remove
   while(length > 0) {
     incr(v, outlen);
     encrypt(v, output_block);
@@ -168,7 +168,7 @@ void CtrDrbg::generate(size_t outlen, size_t keylen,
 // AesCtrDrbg128
 
 void AesCtrDrbg128::setkey(const uint8_t *key) {
-  aes_set_encrypt_key(&ctx, 128/8, key);
+  aes_set_encrypt_key(&ctx, 128 / 8, key);
 }
 
 void AesCtrDrbg128::encrypt(const uint8_t *input, uint8_t *output) {
@@ -178,26 +178,23 @@ void AesCtrDrbg128::encrypt(const uint8_t *input, uint8_t *output) {
 void AesCtrDrbg128::instantiate(const uint8_t *entropy_input,
                                 const uint8_t *personalization_string,
                                 size_t len_personalization_string) {
-  CtrDrbg::instantiate(AES_BLOCK_SIZE, 128/8,
-                       entropy_input,
-                       personalization_string,
-                       len_personalization_string);
+  CtrDrbg::instantiate(AES_BLOCK_SIZE, 128 / 8, entropy_input,
+                       personalization_string, len_personalization_string);
 }
 
 void AesCtrDrbg128::stream(uint8_t *outbuf, size_t length) {
-  generate(AES_BLOCK_SIZE, 128/8, outbuf, length);
+  generate(AES_BLOCK_SIZE, 128 / 8, outbuf, length);
 }
 
 void AesCtrDrbg128::seed(const uint8_t *keybytes, size_t keybyteslen) {
-  static const uint8_t zero[AES_BLOCK_SIZE+128/8] = { 0 };
-  instantiate(zero,
-              keybytes, keybyteslen);
+  static const uint8_t zero[AES_BLOCK_SIZE + 128 / 8] = {0};
+  instantiate(zero, keybytes, keybyteslen);
 }
 
 // AesCtrDrbg192
 
 void AesCtrDrbg192::setkey(const uint8_t *key) {
-  aes_set_encrypt_key(&ctx, 192/8, key);
+  aes_set_encrypt_key(&ctx, 192 / 8, key);
 }
 
 void AesCtrDrbg192::encrypt(const uint8_t *input, uint8_t *output) {
@@ -207,26 +204,23 @@ void AesCtrDrbg192::encrypt(const uint8_t *input, uint8_t *output) {
 void AesCtrDrbg192::instantiate(const uint8_t *entropy_input,
                                 const uint8_t *personalization_string,
                                 size_t len_personalization_string) {
-  CtrDrbg::instantiate(AES_BLOCK_SIZE, 192/8,
-                       entropy_input,
-                       personalization_string,
-                       len_personalization_string);
+  CtrDrbg::instantiate(AES_BLOCK_SIZE, 192 / 8, entropy_input,
+                       personalization_string, len_personalization_string);
 }
 
 void AesCtrDrbg192::stream(uint8_t *outbuf, size_t length) {
-  generate(AES_BLOCK_SIZE, 192/8, outbuf, length);
+  generate(AES_BLOCK_SIZE, 192 / 8, outbuf, length);
 }
 
 void AesCtrDrbg192::seed(const uint8_t *keybytes, size_t keybyteslen) {
-  static const uint8_t zero[AES_BLOCK_SIZE+192/8] = { 0 };
-  instantiate(zero,
-              keybytes, keybyteslen);
+  static const uint8_t zero[AES_BLOCK_SIZE + 192 / 8] = {0};
+  instantiate(zero, keybytes, keybyteslen);
 }
 
 // AesCtrDrbg256
 
 void AesCtrDrbg256::setkey(const uint8_t *key) {
-  aes_set_encrypt_key(&ctx, 256/8, key);
+  aes_set_encrypt_key(&ctx, 256 / 8, key);
 }
 
 void AesCtrDrbg256::encrypt(const uint8_t *input, uint8_t *output) {
@@ -236,18 +230,15 @@ void AesCtrDrbg256::encrypt(const uint8_t *input, uint8_t *output) {
 void AesCtrDrbg256::instantiate(const uint8_t *entropy_input,
                                 const uint8_t *personalization_string,
                                 size_t len_personalization_string) {
-  CtrDrbg::instantiate(AES_BLOCK_SIZE, 256/8,
-                       entropy_input,
-                       personalization_string,
-                       len_personalization_string);
+  CtrDrbg::instantiate(AES_BLOCK_SIZE, 256 / 8, entropy_input,
+                       personalization_string, len_personalization_string);
 }
 
 void AesCtrDrbg256::stream(uint8_t *outbuf, size_t length) {
-  generate(AES_BLOCK_SIZE, 256/8, outbuf, length);
+  generate(AES_BLOCK_SIZE, 256 / 8, outbuf, length);
 }
 
 void AesCtrDrbg256::seed(const uint8_t *keybytes, size_t keybyteslen) {
-  static const uint8_t zero[AES_BLOCK_SIZE+256/8] = { 0 };
-  instantiate(zero,
-              keybytes, keybyteslen);
+  static const uint8_t zero[AES_BLOCK_SIZE + 256 / 8] = {0};
+  instantiate(zero, keybytes, keybyteslen);
 }

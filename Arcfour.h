@@ -17,19 +17,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #ifndef ARCFOUR_H
-# define ARCFOUR_H
+#define ARCFOUR_H
 
 #include "Rng.h"
 #include <nettle/arcfour.h>
 
-class Arcfour: public Rng {
+class Arcfour : public Rng {
   struct arcfour_ctx ctx;
+
 public:
   virtual void seed(const uint8_t *key, size_t keylen);
   void stream(uint8_t *outbuf, size_t length);
 };
 
-class ArcfourDrop3072: public Arcfour {
+class ArcfourDrop3072 : public Arcfour {
 public:
   void seed(const uint8_t *key, size_t keylen);
 };

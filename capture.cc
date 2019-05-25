@@ -42,8 +42,7 @@ void capture(std::string &output, const char *file, const char **args) {
     if(execvp(file, (char **)args) < 0)
       perror("execvp");
     _exit(1);
-  case -1:
-    fatal(errno, "fork");
+  case -1: fatal(errno, "fork");
   }
   if(close(p[1]) < 0)
     fatal(errno, "close pipe");
