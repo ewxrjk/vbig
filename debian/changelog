@@ -1,3 +1,10 @@
+vbig (2) stable; urgency=medium
+
+  * Release 2.
+  * Improve diagnostisc in weird situations.
+
+ -- Richard Kettlewell <rjk@terraraq.org.uk>  Tue, 17 Sep 2019 12:11:37 +0100
+
 vbig (1) stable; urgency=medium
 
   * Release 1.

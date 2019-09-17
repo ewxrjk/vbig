@@ -17,7 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 AC_PREREQ([2.61])
-AC_INIT([vbig], [1], [rjk@greenend.org.uk])
+AC_INIT([vbig], [2], [rjk@greenend.org.uk])
 m4_include([m4/ax_random_device.m4])
 AC_CONFIG_MACRO_DIRS([m4])
 AC_CONFIG_AUX_DIR([config.aux])
