@@ -45,7 +45,7 @@ protected:
 };
 
 class AesCtrDrbg128 : public CtrDrbg {
-  struct aes_ctx ctx;
+  struct aes128_ctx ctx;
   void setkey(const uint8_t *key);
   void encrypt(const uint8_t *input, uint8_t *output);
 
@@ -58,7 +58,7 @@ public:
 };
 
 class AesCtrDrbg192 : public CtrDrbg {
-  struct aes_ctx ctx;
+  struct aes192_ctx ctx;
   void setkey(const uint8_t *key);
   void encrypt(const uint8_t *input, uint8_t *output);
 
@@ -71,7 +71,7 @@ public:
 };
 
 class AesCtrDrbg256 : public CtrDrbg {
-  struct aes_ctx ctx;
+  struct aes256_ctx ctx;
   void setkey(const uint8_t *key);
   void encrypt(const uint8_t *input, uint8_t *output);
 

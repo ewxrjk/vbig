@@ -168,11 +168,11 @@ void CtrDrbg::generate(size_t outlen, size_t keylen, uint8_t *outbuf,
 // AesCtrDrbg128
 
 void AesCtrDrbg128::setkey(const uint8_t *key) {
-  aes_set_encrypt_key(&ctx, 128 / 8, key);
+  aes128_set_encrypt_key(&ctx, key);
 }
 
 void AesCtrDrbg128::encrypt(const uint8_t *input, uint8_t *output) {
-  aes_encrypt(&ctx, AES_BLOCK_SIZE, output, input);
+  aes128_encrypt(&ctx, AES_BLOCK_SIZE, output, input);
 }
 
 void AesCtrDrbg128::instantiate(const uint8_t *entropy_input,
@@ -194,11 +194,11 @@ void AesCtrDrbg128::seed(const uint8_t *keybytes, size_t keybyteslen) {
 // AesCtrDrbg192
 
 void AesCtrDrbg192::setkey(const uint8_t *key) {
-  aes_set_encrypt_key(&ctx, 192 / 8, key);
+  aes192_set_encrypt_key(&ctx, key);
 }
 
 void AesCtrDrbg192::encrypt(const uint8_t *input, uint8_t *output) {
-  aes_encrypt(&ctx, AES_BLOCK_SIZE, output, input);
+  aes192_encrypt(&ctx, AES_BLOCK_SIZE, output, input);
 }
 
 void AesCtrDrbg192::instantiate(const uint8_t *entropy_input,
@@ -220,11 +220,11 @@ void AesCtrDrbg192::seed(const uint8_t *keybytes, size_t keybyteslen) {
 // AesCtrDrbg256
 
 void AesCtrDrbg256::setkey(const uint8_t *key) {
-  aes_set_encrypt_key(&ctx, 256 / 8, key);
+  aes256_set_encrypt_key(&ctx, key);
 }
 
 void AesCtrDrbg256::encrypt(const uint8_t *input, uint8_t *output) {
-  aes_encrypt(&ctx, AES_BLOCK_SIZE, output, input);
+  aes256_encrypt(&ctx, AES_BLOCK_SIZE, output, input);
 }
 
 void AesCtrDrbg256::instantiate(const uint8_t *entropy_input,
