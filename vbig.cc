@@ -296,12 +296,12 @@ static void clearprogress() {
 }
 
 // update progress indicator
-static void showprogress(long long amount, const char *show) {
+static void showprogress(long long amount, const char *show, bool force) {
   if(!progress)
     return;
 
   static int counter;
-  if(counter++ < 1000)
+  if(counter++ < 1000 && !force)
     return;
   counter = 0;
 
@@ -420,9 +420,9 @@ static long long execute(mode_type mode, bool entire, const char *show,
       }
     }
     remain -= bytesGenerated;
-    showprogress(size - remain, mode == VERIFY ? "verifying" : "writing");
+    showprogress(size - remain, mode == VERIFY ? "verifying" : "writing",
+                 false);
   }
-  clearprogress();
   if(mode == VERIFY && !entire) {
     // Make sure there isn't any more past the expected stopping point.
     ssize_t bytesRead = readall(fd, input, 1);
@@ -431,12 +431,14 @@ static long long execute(mode_type mode, bool entire, const char *show,
     if(bytesRead != 0)
       fatal(0, "%s: extended beyond %lld bytes", path, size);
   }
+  /* Actual size written/verified */
+  long long done = size - remain;
+  showprogress(done, "flushing", true);
   if(mode == CREATE && flush)
     flushCache(fd);
   if(close(fd) < 0)
     fatal(errno, "close %s", path);
-  /* Actual size written/verified */
-  long long done = size - remain;
+  clearprogress();
   if(show) {
     printf("%lld bytes (%lldM, %lldG) %s\n", done, done >> 20, done >> 30,
            show);
