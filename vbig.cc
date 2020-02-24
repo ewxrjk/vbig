@@ -361,7 +361,7 @@ static ssize_t readall(int fd, uint8_t *buffer, size_t bytes) {
   return total;
 }
 
-// write/verify the target file
+// Write/verify the target file. Return the actual size.
 static long long execute(mode_type mode, bool entire, const char *show,
                          Rng *rng) {
   rng->seed((const uint8_t *)seed, seedlen);
@@ -372,24 +372,34 @@ static long long execute(mode_type mode, bool entire, const char *show,
   if(mode == VERIFY && flush)
     flushCache(fd);
   uint8_t generated[4096], input[4096];
+  // Read/write requested size.
+  // (For writes with --entire, or --both to a block device without an explicit
+  // size, try to write up to LLONG_MAX.)
   long long remain = size;
   while(remain > 0) {
+    // Get enough random data
     ssize_t bytesGenerated =
         (remain > (ssize_t)sizeof generated ? sizeof generated : remain);
     rng->stream(generated, bytesGenerated);
     if(mode == CREATE) {
+      // Write to the device.
       ssize_t bytesWritten = writeall(fd, generated, bytesGenerated);
       if(bytesWritten < 0) {
+        // Normally, errors are just fatal.
+        // In --entire, or sizeless --both, we accept ENOSPC and stop at that
+        // point.
         if(!entire || errno != ENOSPC)
           fatal(errno, "write %s", path);
-        remain -= bytesWritten;
         break;
       }
       assert(bytesWritten == bytesGenerated);
     } else {
+      // Read from the device.
       ssize_t bytesRead = readall(fd, input, bytesGenerated);
+      // Read errors are always fatal.
       if(bytesRead < 0)
         fatal(errno, "read %s", path);
+      // Verify that the device had the expected data.
       if(memcmp(generated, input, bytesRead)) {
         for(ssize_t n = 0; n < bytesRead; ++n)
           if(generated[n] != input[n])
@@ -399,10 +409,12 @@ static long long execute(mode_type mode, bool entire, const char *show,
       }
       /* Truncated */
       if(bytesRead < bytesGenerated) {
+        // With --entire --verify, we'll report how far we got.
         if(entire) {
           remain -= bytesRead;
           break;
         }
+        // Otherwise short reads are fatal.
         fatal(0, "%s: truncated at %lld/%lld bytes", path,
               (size - remain + bytesRead), size);
       }
@@ -412,6 +424,7 @@ static long long execute(mode_type mode, bool entire, const char *show,
   }
   clearprogress();
   if(mode == VERIFY && !entire) {
+    // Make sure there isn't any more past the expected stopping point.
     ssize_t bytesRead = readall(fd, input, 1);
     if(bytesRead < 0)
       fatal(errno, "read %s", path);
