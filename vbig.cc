@@ -1,6 +1,6 @@
 /*
  * This file is part of vbig.
- * Copyright (C) 2011, 2013-2017, 2019 Richard Kettlewell
+ * Copyright (C) 2011, 2013-2017, 2019, 2020 Richard Kettlewell
  * Copyright (C) 2013 Ian Jackson
  *
  * This program is free software: you can redistribute it and/or modify
@@ -53,26 +53,35 @@ const struct option opts[] = {
 
 // Display help message
 static void help(void) {
-  printf(
-      "vbig - create or verify a large but pseudo-random file\n"
-      "\n"
-      "Usage:\n"
-      "  vbig [OPTIONS] [--both|--verify|--create] PATH [SIZE]\n"
-      "\n"
-      "Options:\n"
-      "  --seed, -s        Specify random seed as string\n"
-      "  --seed-file, -S   Read random seed from (start of) this file\n"
-      "  --seed-length, -L Set (maximum) seed length to read from file\n"
-      "  --verify, -v      Verify that PATH contains the expected contents\n"
-      "  --create, -c      Create PATH with psuedo-random contents\n"
-      "  --both, -b        Do both create and verify (default)\n"
-      "  --flush, -f       Flush cache\n"
-      "  --entire, -e      Write until full; read until EOF\n"
-      "  --progress, -p    Show progress as we go\n"
-      "  --rng, -r NAME    Select RNG (arcfour, or aes-ctr-drbg-128/192/256)\n"
-      "  --force, -F       Ignore warnings\n"
-      "  --help, -h        Display usage message\n"
-      "  --version, -V     Display version string\n");
+  printf("vbig - create or verify a large but pseudo-random file\n"
+         "\n"
+         "Usage:\n"
+         "  vbig [OPTIONS] [--both|--verify|--create] PATH [SIZE]\n"
+         "\n"
+         "Mode selection:\n"
+         "  --create, -c      Create PATH with pseudo-random contents\n"
+         "  --verify, -v      Verify that PATH contains the expected contents\n"
+         "  --both, -b        Do both create and verify (default; implies "
+         "--both)\n"
+         "\n"
+         "Size control:\n"
+         "  SIZE[K/M/G]       Size of file or device\n"
+         "  --entire, -e      Write until full; read until EOF\n"
+         "\n"
+         "Random number control:\n"
+         "  --seed, -s        Specify random seed as string\n"
+         "  --seed-file, -S   Read random seed from (start of) this file\n"
+         "  --seed-length, -L Set (maximum) seed length to read from file "
+         "(bytes)\n"
+         "  --rng, -r NAME    Select RNG (arcfour-drop-3072, or "
+         "aes-ctr-drbg-128/192/256)\n"
+         "\n"
+         "Other options:\n"
+         "  --flush, -f       Flush cache (usually needs root)\n"
+         "  --progress, -p    Show progress as we go\n"
+         "  --force, -F       Ignore warnings\n"
+         "  --help, -h        Display usage message\n"
+         "  --version, -V     Display version string\n");
 }
 
 // Possible modes of operation

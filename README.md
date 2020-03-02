@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/ewxrjk/vbig.svg?branch=master)](https://travis-ci.org/ewxrjk/vbig)
 
-vbig creates or verifies a file full of psuedo-random data.
+vbig creates or verifies a file full of pseudo-random data.
 The intended use is to verify that storage media work properly.
 
 ## Installation
