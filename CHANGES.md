@@ -1,5 +1,13 @@
 # vbig Change History
 
+## Release 3
+
+* Builds against newer versions of Nettle.
+* [Fixed mishandling of bytes remaining counter](https://github.com/ewxrjk/vbig/issues/6).
+* [Improve progress reporting when flushing](https://github.com/ewxrjk/vbig/issues/5).
+* Tidy up usage message.
+* Don’t create new output with the (deprecated) `arcfour` RNG.
+
 ## Release 1
 
 * New RNGs have been introduced. Use the `--rng` option to choose between them.
