@@ -17,14 +17,25 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 set -e
-check() {
-  rm -f testfile.$$
-  ${VBIG:-./vbig} --both "$@" testfile.$$ 65536
-  rm -f testfile.$$
-}
 
-check
-check --rng arcfour-drop-3072
-check --rng aes-ctr-drbg-128
-check --rng aes-ctr-drbg-192
-check --rng aes-ctr-drbg-256
+rm -f testfile.$$
+
+if ${VBIG:-./vbig} --rng arcfour --create "$@" testfile.$$ 65536; then
+    echo >&2 "ERROR: --create with arcfour didn't fail"
+    exit 1
+fi
+
+if [ -e testfile.$$ ]; then
+    echo >&2 "ERROR: --create with arcfour still created output"
+    exit 1
+fi
+
+if ${VBIG:-./vbig} --rng arcfour --both "$@" testfile.$$ 65536; then
+    echo >&2 "ERROR: --both with arcfour didn't fail"
+    exit 1
+fi
+
+if [ -e testfile.$$ ]; then
+    echo >&2 "ERROR: --both with arcfour still created output"
+    exit 1
+fi

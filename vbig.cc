@@ -191,6 +191,8 @@ int main(int argc, char **argv) {
   argv += optind;
   Rng *rng;
   if(!strcasecmp(rngname, "arcfour")) {
+    if(mode != VERIFY)
+      fatal(0, "arcfour algorithm is insecure");
     fprintf(stderr, "WARNING: arcfour algorithm is insecure\n");
     rng = new Arcfour();
   } else if(!strcasecmp(rngname, "arcfour-drop-3072"))
