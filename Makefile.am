@@ -34,5 +34,7 @@ AM_CXXFLAGS=${NETTLE_CFLAGS} ${JSONCPP_CFLAGS} -DTAG=\"${tag}\"
 man_MANS=vbig.1
 TEST_SHELLS=t-both t-seeded t-separate t-corrupt t-truncated t-extended t-args t-fakestick t-arcfour-disabled
 TESTS=t-arcfour t-aes-ctr-drbg ${TEST_SHELLS}
-EXTRA_DIST=${man_MANS} README.md ${TEST_SHELLS} t-fakestick-captive CHANGES.md
+EXTRA_DIST=${man_MANS} README.md ${TEST_SHELLS} t-fakestick-captive CHANGES.md \
+  debian/changelog debian/control debian/rules debian/compat debian/copyright \
+  debian/sources/format scripts/dist
 ACLOCAL_AMFLAGS=-I m4

@@ -1,0 +1,25 @@
+#!/bin/sh
+set -e
+
+rm -rf products vbig*.tar.gz vbig*.deb
+
+[ -f configure ] || autoreconf -is
+[ -f Makefile ] || ./configure
+make -j$(nproc) distcheck
+
+VERSION=$(./vbig --version | awk {'print $1}')
+
+mkdir -p products
+mv vbig-${VERSION}.tar.gz products
+
+cd products
+tar -xf vbig-${VERSION}.tar.gz
+cd vbig-${VERSION}
+dpkg-buildpackage -b -uc -us
+cd ..
+rm -rf vbig-${VERSION}
+
+for f in vbig-${VERSION}.tar.gz *.deb; do
+    gpg --armor --detach-sign "$f"
+done
+
