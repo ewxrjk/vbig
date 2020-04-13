@@ -51,13 +51,13 @@ which vbig will create or truncate as necessary, or a block device.
 Note that if it's a file, vbig won't delete it after it's done.
 .PP
 vbig has some platform-dependent sanity checks but you should
-nevertheless be cautious when using it; it as as dangerous as \fBdd\fR(1).
+nevertheless be cautious when using it; it is as dangerous as \fBdd\fR(1).
 .SS Sizes
 \fISIZE\fR may end with \fBK\fR, \fBM\fR or \fBG\fR to select (binary)
 kilobytes, megabytes or gigabytes.
 The size is mandatory when creating a file but optional when verifying
 it, unless \fB\-\-entire\fR is specified.
-If \fISIZE\fR not specified when writing-then-verifying, it is as if
+If \fISIZE\fR is not specified when writing-then-verifying, it is as if
 \fB\-\-entire\fR was specified.
 .PP
 In \fB--both\fR mode (the default):
@@ -72,7 +72,7 @@ The \fB--entire\fR option has no additional effect.
 In \fB--create\fR mode:
 .IP \(bu
 If a size is specified then the device is expected to have the specified size
-and an error is reported if it is smaller
+and an error is reported if it is smaller.
 The real size will be printed to stdout.
 No error is reported if it is bigger.
 .IP \(bu
@@ -92,10 +92,10 @@ then \fBstat\fR(2) is used to discover the advertized device size.
 .SS Random Seeds
 If neither \fB--seed\fR nor \fB--seed-file\fR are specified:
 .IP \(bu
-in \fB--both\fR mode a fresh random seed is read from the system's
+In \fB--both\fR mode a fresh random seed is read from the system's
 random number generator
 .IP \(bu
-in other modes a fixed default seed is used.
+In other modes a fixed default seed is used.
 .SH OPTIONS
 .TP
 .B --seed\fR, \fB-s \fISEED
