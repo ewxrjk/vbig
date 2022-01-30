@@ -30,7 +30,8 @@ fi
 
 modprobe nbd
 
-trap "rm -rf $$.img" EXIT INT HUP TERM
+trap "rm -rf $$.img" EXIT
+trap "rm -rf $$.img; exit 1" INT HUP TERM
 
 nbdkit --unix - \
        --new-style \

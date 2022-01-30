@@ -35,7 +35,8 @@ if [ "${dev}" = "" ]; then
 fi
 
 nbd-client -unix $nbd ${dev}
-trap "nbd-client -d ${dev}" EXIT INT HUP TERM
+trap "nbd-client -d ${dev}" EXIT
+trap "nbd-client -d ${dev}; exit 1" INT HUP TERM
 
 if ./vbig --flush ${dev}; then
     echo >&2 "ERROR: vbig did not detect bogus device"
