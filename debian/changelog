@@ -1,3 +1,10 @@
+vbig (3.1) stable; urgency=medium
+
+  * Typo fixes
+  * Rebuild for bookworm
+
+ -- Richard Kettlewell <rjk@terraraq.uk>  Fri, 24 Nov 2023 15:05:09 +0000
+
 vbig (3) unstable; urgency=medium
 
   * Release 3.
