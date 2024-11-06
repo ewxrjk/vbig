@@ -316,11 +316,11 @@ static void showprogress(long long amount, const char *show, bool force) {
     return;
   counter = 0;
 
-  int triples = sizeof(amount);
+  const size_t triples = sizeof(amount);
   char rawbuf[triples * 3 + 1];
   char outbuf[triples * 4 + 1];
   snprintf(rawbuf, sizeof(rawbuf), "% *lld", (int)sizeof(rawbuf) - 1, amount);
-  for(int i = 0; i < triples; i++) {
+  for(size_t i = 0; i < triples; i++) {
     outbuf[i * 4] = ' ';
     memcpy(outbuf + i * 4 + 1, rawbuf + i * 3, 3);
   }
